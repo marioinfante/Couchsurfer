@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "621358357323",
+    "firebase_url": "https://couchsurfer-9d140.firebaseio.com",
+    "project_id": "couchsurfer-9d140",
+    "storage_bucket": "couchsurfer-9d140.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621358357323:android:6d2407f178f3097e",
+        "android_client_info": {
+          "package_name": "cs184.cs.ucsb.edu.couchsurfer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621358357323-hb1e37t8mq57blrk36q47jtuacac7ki9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs184.cs.ucsb.edu.couchsurfer",
+            "certificate_hash": "8a4f5d98212825f0eecdad62f8a09b5d97c161d9"
+          }
+        },
+        {
+          "client_id": "621358357323-4nrjdnp612kktgricoo6gflub70f0sfi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc4zs84FwW0eepGC4jLdjJeZYp8enkmSA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621358357323-4nrjdnp612kktgricoo6gflub70f0sfi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
