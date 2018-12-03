@@ -19,7 +19,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
     private FirebaseAuth mAuth;
     private EditText emailText, passText;
-    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +27,9 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
         emailText = (EditText) findViewById(R.id.usernameText);
         passText = (EditText) findViewById(R.id.passwordText);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mAuth = FirebaseAuth.getInstance();
 
-        findViewById(R.id.signupTextView).setOnClickListener(this);
         findViewById(R.id.signInButton).setOnClickListener(this);
     }
 
@@ -65,24 +62,21 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        progressBar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                progressBar.setVisibility(View.VISIBLE);
                 if (task.isSuccessful()) {
                     //if user successfully logs in, send to postings activity page (?)
                     //Intent intent = new Intent(LogInActivity.this, **new.class**);
                     // Closes all other activities once log in(aka signup and login activities)
                     //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    Intent navigationIntent = new Intent(getApplicationContext(), NavigationActivity.class );
+                    Intent navigationIntent = new Intent(getApplicationContext(), MainActivity.class );
                     navigationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(navigationIntent);
                 }
 
                 else {
                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -91,9 +85,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
-            case R.id.signupTextView:
-                startActivity(new Intent(this, SignUpActivity.class));
-                break;
             case R.id.signInButton:
                 userLogin();
                 break;
