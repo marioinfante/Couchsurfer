@@ -17,8 +17,7 @@ public class CouchPost implements Post {
     private String booker;
     private Boolean accepted;
 
-    public CouchPost(String postId, String author, String authorUid, String description, double longitude, double latitude, double price, Date start_date, Date end_date, String pictures, String booker, Boolean accepted) {
-        this.postId = postId;
+    public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, Date start_date, Date end_date, String pictures, String booker, Boolean accepted) {
         this.author = author;
         this.authorUid = authorUid;
         this.description = description;
@@ -32,11 +31,26 @@ public class CouchPost implements Post {
         this.accepted = accepted;
     }
 
+    public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, Date start_date, Date end_date, String pictures) {
+        this.author = author;
+        this.authorUid = authorUid;
+        this.description = description;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.price = price;
+        this.start_date = start_date;
+        this.end_date = end_date;
+        this.pictures = pictures;
+        this.booker = "none";
+        this.accepted = false;
+    }
+
     @Override
     public String getPostId() {
         return postId;
     }
 
+    @Override
     public String getAuthor() {
         return author;
     }
@@ -46,30 +60,37 @@ public class CouchPost implements Post {
         return authorUid;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public Double getLongitude() {
         return longitude;
     }
 
+    @Override
     public Double getLatitude() {
         return latitude;
     }
 
+    @Override
     public Double getPrice() {
         return price;
     }
 
+    @Override
     public Date getStart_date() {
         return start_date;
     }
 
+    @Override
     public Date getEnd_date() {
         return end_date;
     }
 
+    @Override
     public String getPictures() {
         return pictures;
     }
@@ -82,26 +103,34 @@ public class CouchPost implements Post {
         return accepted;
     }
 
+    public void setPostId(String postId) { this.postId = postId; }
+
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public void setPrice(double price) {
         this.price = price;
     }
 
+    @Override
     public void setStart_date(Date start_date) {
         this.start_date = start_date;
     }
 
+    @Override
     public void setEnd_date(Date end_date) {
         this.end_date = end_date;
     }
 
+    @Override
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
+    @Override
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
