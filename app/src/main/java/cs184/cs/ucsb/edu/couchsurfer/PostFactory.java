@@ -7,6 +7,9 @@ import java.util.Date;
  */
 
 public interface PostFactory {
-    public CouchPost createPost(String postId, String author, String authorUid, String description, double longitude, double latitude, double price,
+    public CouchPost createPost(String author, String authorUid, String description, double longitude, double latitude, double price,
+                                Date start_date, Date end_date, String pictures);
+
+    public CouchPost createPost(String author, String authorUid, String description, double longitude, double latitude, double price,
                                 Date start_date, Date end_date, String pictures, String booker, Boolean accepted);
 }

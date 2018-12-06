@@ -8,9 +8,15 @@ import java.util.Date;
 
 public class DefaultPostFactory implements PostFactory {
 
-    public CouchPost createPost(String postId, String author, String authorUid, String description, double longitude, double latitude, double price,
+    public CouchPost createPost(String author, String authorUid, String description, double longitude, double latitude, double price,
+                                Date start_date, Date end_date, String pictures) {
+        CouchPost post = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures);
+        return post;
+    }
+
+    public CouchPost createPost(String author, String authorUid, String description, double longitude, double latitude, double price,
                                 Date start_date, Date end_date, String pictures, String booker, Boolean accepted) {
-        CouchPost post = new CouchPost(postId, author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
+        CouchPost post = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
         return post;
     }
 }
