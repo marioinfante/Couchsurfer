@@ -1,10 +1,14 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -15,9 +19,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Attaching the layout to the toolbar object
-        toolbar = findViewById(R.id.tool_bar);
+        //toolbar = findViewById(R.id.tool_bar);
         // Setting toolbar as the ActionBar with setSupportActionBar() call
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
+        Intent intent = new Intent(this, LogInActivity.class);
+        startActivity(intent);
     }
 
     @Override
