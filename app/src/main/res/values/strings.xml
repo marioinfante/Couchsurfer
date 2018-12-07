@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Couchsurfer</string>
+    <string name="new_post_title">NEW COUCHSURFER LISTING</string>
+    <string name="price">PRICE</string>
 </resources>
