@@ -19,9 +19,9 @@ import java.util.ArrayList;
 
 import com.squareup.picasso.Picasso;
 
-public class CustomAdapter extends ArrayAdapter<Couch> implements View.OnClickListener{
+public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnClickListener{
 
-    private ArrayList<Couch> dataSet;
+    private ArrayList<CouchPost> dataSet;
     Context mContext;
 
     // View lookup cache
@@ -31,7 +31,7 @@ public class CustomAdapter extends ArrayAdapter<Couch> implements View.OnClickLi
         ImageView picture;
     }
 
-    public CustomAdapter(ArrayList<Couch> data, Context context) {
+    public CustomAdapter(ArrayList<CouchPost> data, Context context) {
         super(context, R.layout.row_item, data);
         this.dataSet = data;
         this.mContext=context;
@@ -56,7 +56,7 @@ public class CustomAdapter extends ArrayAdapter<Couch> implements View.OnClickLi
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        //Couch couch = getItem(position);
+        CouchPost couch = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
 
@@ -82,15 +82,15 @@ public class CustomAdapter extends ArrayAdapter<Couch> implements View.OnClickLi
         Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         result.startAnimation(animation);
         lastPosition = position;
-/*
+
         viewHolder.description.setText(couch.getDescription());
         viewHolder.price.setText( ((Double)couch.getPrice()).toString());
         viewHolder.picture.setTag(position);
         Picasso.with(mContext)
-                .load(couch.picture_URL).resize(500, 500)
+                .load(couch.getPictures()).resize(500, 500)
                 .into(viewHolder.picture);
+
         // Return the completed view to render on screen
-        */
         return convertView;
     }
 /*

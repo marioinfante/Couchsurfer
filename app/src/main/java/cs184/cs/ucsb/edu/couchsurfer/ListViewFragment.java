@@ -32,12 +32,12 @@ public class ListViewFragment extends Fragment {
 
         final MainActivity main = (MainActivity) getActivity();
         adapter = new CustomAdapter(main.couches, getContext());
-        main.listView = view.findViewById(R.id.listview);
-        main.listView.setAdapter(adapter);
-        main.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        main.listview = view.findViewById(R.id.listview);
+        main.listview.setAdapter(adapter);
+        main.listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Couch couch = main.couches.get(position);
+                CouchPost couch = main.couches.get(position);
                 Snackbar.make(view, couch.getAuthor(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
             }
