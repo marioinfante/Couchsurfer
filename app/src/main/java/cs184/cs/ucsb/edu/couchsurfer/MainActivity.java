@@ -22,6 +22,8 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public ArrayList<CouchPost> couches;
     public ListView listview;
+    public ListViewFragment listViewFragment;
+    public MapViewFragment mapViewFragment;
     public static CustomAdapter adapter;
 
     Toolbar toolbar;
@@ -55,10 +57,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
+
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
 
-
+        mapViewFragment = new MapViewFragment();
+        listViewFragment = new ListViewFragment();
         startListViewFragment();
     }
 
@@ -70,9 +74,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
-
-        // Start listview as the first view
-        //startListViewFragment();
     }
 
     @Override
@@ -107,37 +108,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
-        Class fragmentClass;
         switch (item.getItemId()) {
-            /*
+
             case R.id.nav_search_fragment:
-                fragmentClass = DummyListViewFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, listViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
-            */
             case R.id.nav_maps_fragment:
-                startMapsViewFragment();
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, mapViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
             case R.id.nav_myListings_fragment:
-                //startListViewFragment();
-                //fragmentClass = ListViewFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, listViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
             default:
-                startListViewFragment();
-                //fragmentClass = ListViewFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, listViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
         }
-
-        /*
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-        */
 
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
@@ -172,17 +168,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         // Start the listview
-        ListViewFragment listViewFragment = new ListViewFragment();
         ft.add(R.id.flContent, listViewFragment);
         ft.commit();
     }
 
-    public void startMapsViewFragment(){
-        // Start the mapview
-        ft = fm.beginTransaction();
-        MapViewFragment mapViewFragment = new MapViewFragment();
-        ft.replace(R.id.flContent, mapViewFragment);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
 }
