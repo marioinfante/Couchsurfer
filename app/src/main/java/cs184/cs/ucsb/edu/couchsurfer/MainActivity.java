@@ -6,11 +6,10 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -53,11 +52,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-
-        /*
+      
+      // Start login activity
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
-        */
+      
+      
     }
 
     @Override
@@ -69,16 +69,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
 
-        // Start login activity
-        Intent intent = new Intent(this, LogInActivity.class);
-        startActivity(intent);
-
-        // Start the toolbar
-        toolbar = findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-
         // Start listview as the first view
-        startListViewFragment();
+        //startListViewFragment();
     }
 
     @Override
@@ -115,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass;
-        switch (item.getItemId()) {
+        switch(item.getItemId()) {
             case R.id.nav_search_fragment:
                 fragmentClass = DummyListViewFragment.class;
                 break;
@@ -147,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
 
     public void startListViewFragment(){
         // Populate Data
@@ -175,6 +166,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.main, listViewFragment);
         ft.commit();
-
     }
 }
