@@ -8,6 +8,7 @@ public class User {
     private String phoneNo;
     private String city;
     private String state;
+    private int rating;
 
     public User() {
     }
@@ -20,6 +21,7 @@ public class User {
         this.city = city;
         this.state = state;
         this.profilePicUrl = "";
+        this.rating = 0;
     }
 
     public String getUid() {
@@ -50,6 +52,10 @@ public class User {
         return state;
     }
 
+    public int getRating() {
+        return rating;
+    }
+
 
     public void setUid(String uid) {
         this.uid = uid;
@@ -70,5 +76,7 @@ public class User {
     public void setState(String state) {
         this.state = state;
     }
+
+    public void setRating(int rating) { this.rating = rating; }
 
 }
