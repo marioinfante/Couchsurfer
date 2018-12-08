@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,12 +13,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public ArrayList<CouchPost> couches;
@@ -29,8 +29,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
     DrawerLayout mDrawer;
     NavigationView nvDrawer;
-
     ActionBarDrawerToggle drawerToggle;
+
+    View headerLayout;
+    ImageView profilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +52,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-      
-      // Start login activity
+
+        headerLayout = nvDrawer.inflateHeaderView(R.layout.nav_header);
+        profilePic = headerLayout.findViewById(R.id.profilePicIV);
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Class fragmentClass = ProfileFragment.class;
+                Fragment fragment = new Fragment();
+                try {
+                    fragment = (Fragment) fragmentClass.newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+            }
+        });
+
+        // Start login activity
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
+
+        startListViewFragment();
     }
 
     @Override
@@ -64,9 +85,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
-
-        // Start listview as the first view
-        //startListViewFragment();
     }
 
     @Override
@@ -104,24 +122,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = null;
         Class fragmentClass;
         switch (item.getItemId()) {
-            /*
             case R.id.nav_search_fragment:
-                fragmentClass = DummyListViewFragment.class;
+                startListViewFragment();
+                fragmentClass = ListViewFragment.class;
                 break;
+            case R.id.nav_profile_fragment:
+                fragmentClass = ProfileFragment.class;
+                break;
+
             case R.id.nav_maps_fragment:
-                fragmentClass = DummyMapsFragment.class;
+                fragmentClass = ProfileFragment.class;
                 break;
-            */
             case R.id.nav_myListings_fragment:
-                //startListViewFragment();
-                //fragmentClass = ListViewFragment.class;
+                fragmentClass = ProfileFragment.class;
                 break;
+
             default:
                 startListViewFragment();
-                //fragmentClass = ListViewFragment.class;
+                fragmentClass = ListViewFragment.class;
         }
 
-        /*
         try {
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
@@ -131,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-        */
+
 
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
@@ -164,12 +184,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
 
-
         // Start the listview
-        ListViewFragment listViewFragment = new ListViewFragment();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.main, listViewFragment);
-        ft.commit();
+        Class fragmentClass = ListViewFragment.class;
+        Fragment fragment = new Fragment();
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 }

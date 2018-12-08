@@ -91,7 +91,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference().child("users");
 
-
         if (currentUser != null) {
             Query query =  dbRef.child(currentUser.getUid());
             query.addValueEventListener(new ValueEventListener() {
