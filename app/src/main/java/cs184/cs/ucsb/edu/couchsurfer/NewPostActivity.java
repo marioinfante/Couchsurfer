@@ -1,6 +1,7 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -75,6 +76,11 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.photoButton:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private class DatePickerDialogListener implements DatePickerDialog.OnDateSetListener {

@@ -76,7 +76,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.VISIBLE);
                 if (task.isSuccessful()) {
-                    finish();
+                    startActivity(new Intent(LogInActivity.this, MainActivity.class));
                     Log.e("TAG", "successful login");
                 }
 

@@ -53,9 +53,7 @@ public class User {
         return city;
     }
 
-    public String getState() {
-        return state;
-    }
+    public String getState() { return state; }
 
     public ArrayList<String> getPostRequests() {
         return postRequests;
@@ -85,9 +83,7 @@ public class User {
         this.state = state;
     }
 
-    public void setPostRequests(ArrayList<String> postRequests) {
-        this.postRequests = postRequests;
-    }
+    public void setPostRequests(ArrayList<String> postRequests) { this.postRequests = postRequests; }
 
     public void setRating(int rating) { this.rating = rating; }
 
