@@ -6,6 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".NewPostActivity">
 
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="130dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="112dp"
+        android:capitalize="words"
+        android:gravity="center"
+        android:text="@string/location"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionTextView" />
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="130dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="68dp"
+        android:capitalize="words"
+        android:gravity="center"
+        android:text="@string/description"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateButton" />
+
     <Button
         android:id="@+id/dateButton"
         android:layout_width="wrap_content"
@@ -23,7 +51,7 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,14 +84,14 @@
         android:capitalize="words"
         android:gravity="center"
         android:text="@string/price"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="@color/colorPrimary"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateButton" />
 
     <EditText
         android:id="@+id/priceEditText"
-        android:layout_width="191dp"
+        android:layout_width="181dp"
         android:layout_height="39dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
@@ -71,7 +99,73 @@
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toEndOf="@+id/priceTextView"
         app:layout_constraintTop_toBottomOf="@+id/dateTextView" />
+
+    <TextView
+        android:id="@+id/dollarTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="$"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/priceEditText"
+        app:layout_constraintTop_toBottomOf="@+id/dateTextView" />
+
+    <EditText
+        android:id="@+id/descriptionEditText"
+        android:layout_width="192dp"
+        android:layout_height="137dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        app:layout_constraintStart_toEndOf="@+id/descriptionTextView"
+        app:layout_constraintTop_toBottomOf="@+id/priceEditText" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/photoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="72dp"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locationTextView"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <EditText
+        android:id="@+id/locationEditText"
+        android:layout_width="193dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toEndOf="@+id/locationTextView"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionEditText" />
+
+    <ImageView
+        android:id="@+id/photoImageView"
+        android:layout_width="191dp"
+        android:layout_height="113dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toEndOf="@+id/photoButton"
+        app:layout_constraintTop_toBottomOf="@+id/locationEditText"
+        app:srcCompat="@color/common_google_signin_btn_text_dark_default" />
+
+    <Button
+        android:id="@+id/postButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/post_listing"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

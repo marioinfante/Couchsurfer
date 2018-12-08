@@ -12,6 +12,7 @@ public class User {
     private String city;
     private String state;
     private ArrayList<String> postRequests;
+    private int rating;
 
     public User() {
     }
@@ -25,6 +26,7 @@ public class User {
         this.state = state;
         this.profilePicUrl = "";
         this.postRequests = new ArrayList<String>(3);
+        this.rating = 0;
     }
 
     public String getUid() {
@@ -58,6 +60,10 @@ public class User {
     public ArrayList<String> getPostRequests() {
         return postRequests;
     }
+  
+    public int getRating() {
+        return rating;
+    }
 
     public void setUid(String uid) {
         this.uid = uid;
@@ -82,4 +88,7 @@ public class User {
     public void setPostRequests(ArrayList<String> postRequests) {
         this.postRequests = postRequests;
     }
+
+    public void setRating(int rating) { this.rating = rating; }
+
 }
