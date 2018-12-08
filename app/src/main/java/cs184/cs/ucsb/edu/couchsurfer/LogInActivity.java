@@ -76,18 +76,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.VISIBLE);
                 if (task.isSuccessful()) {
-                    //if user successfully logs in, send to postings activity page (?)
-                    //Intent intent = new Intent(LogInActivity.this, **new.class**);
-                    // Closes all other activities once log in(aka signup and login activities)
-                    //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    /*
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    DummyListViewFragment fragment = new DummyListViewFragment();
-                    fragmentTransaction.add(R.id.dummy_list_fragment, fragment);
-                    fragmentTransaction.commit();
-                    */
-
+                    finish();
                     Log.e("TAG", "successful login");
                 }
 
