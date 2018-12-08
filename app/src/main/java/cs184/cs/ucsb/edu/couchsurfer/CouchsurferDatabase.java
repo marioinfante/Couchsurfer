@@ -75,11 +75,8 @@ public class CouchsurferDatabase {
                 long numChildren = dataSnapshot.getChildrenCount();
                 dataSnapshot.getRef().child(Long.toString(numChildren + 1)).setValue(postId);
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 

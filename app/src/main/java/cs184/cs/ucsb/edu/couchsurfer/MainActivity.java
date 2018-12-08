@@ -55,11 +55,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        /*
-        // Start login activity
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
-        */
+
 
         startListViewFragment();
     }
