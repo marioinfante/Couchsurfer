@@ -14,8 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -24,11 +22,11 @@ import java.util.Date;
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    Toolbar toolbar;
     public ArrayList<CouchPost> couches;
     public ListView listview;
     public static CustomAdapter adapter;
 
+    Toolbar toolbar;
     DrawerLayout mDrawer;
     NavigationView nvDrawer;
 
@@ -56,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       // Start login activity
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
-      
-      
     }
 
     @Override
@@ -107,20 +103,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass;
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
+            /*
             case R.id.nav_search_fragment:
                 fragmentClass = DummyListViewFragment.class;
                 break;
             case R.id.nav_maps_fragment:
                 fragmentClass = DummyMapsFragment.class;
                 break;
+            */
             case R.id.nav_myListings_fragment:
-                fragmentClass = DummyMyListingsFragment.class;
+                //startListViewFragment();
+                //fragmentClass = ListViewFragment.class;
                 break;
             default:
-                fragmentClass = DummyListViewFragment.class;
+                startListViewFragment();
+                //fragmentClass = ListViewFragment.class;
         }
 
+        /*
         try {
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        */
 
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
@@ -139,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
 
     public void startListViewFragment(){
         // Populate Data
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         date.setDate(9);
         date.setMonth(10);
         date.setYear(2018);
+
         Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/" + R.drawable.sample_7);
         Boolean accepted = false;
         String booker = "Lindsey";
@@ -159,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         couches = new ArrayList<>();
 
         couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
+
 
         // Start the listview
         ListViewFragment listViewFragment = new ListViewFragment();
