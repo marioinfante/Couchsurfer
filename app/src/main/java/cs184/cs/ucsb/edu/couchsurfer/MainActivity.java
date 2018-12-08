@@ -50,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
+      // Start login activity
+        Intent intent = new Intent(this, LogInActivity.class);
+        startActivity(intent);
     }
 
     @Override
