@@ -19,8 +19,6 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public ArrayList<CouchPost> couches;
     public ListView listview;
@@ -32,10 +30,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     ActionBarDrawerToggle drawerToggle;
 
+    FragmentManager fm;
+    FragmentTransaction ft;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
 
         // Attaching the layout to the toolbar object
         toolbar = findViewById(R.id.tool_bar);
@@ -50,10 +54,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-      
-      // Start login activity
+
+        /*
+        // Start login activity
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
+        */
+
+        startListViewFragment();
     }
 
     @Override
@@ -108,10 +116,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_search_fragment:
                 fragmentClass = DummyListViewFragment.class;
                 break;
-            case R.id.nav_maps_fragment:
-                fragmentClass = DummyMapsFragment.class;
-                break;
             */
+            case R.id.nav_maps_fragment:
+                startMapsViewFragment();
+                break;
             case R.id.nav_myListings_fragment:
                 //startListViewFragment();
                 //fragmentClass = ListViewFragment.class;
@@ -167,9 +175,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Start the listview
         ListViewFragment listViewFragment = new ListViewFragment();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.main, listViewFragment);
+        ft.add(R.id.flContent, listViewFragment);
+        ft.commit();
+    }
+
+    public void startMapsViewFragment(){
+        // Start the mapview
+        ft = fm.beginTransaction();
+        MapViewFragment mapViewFragment = new MapViewFragment();
+        ft.replace(R.id.flContent, mapViewFragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 }
