@@ -1,5 +1,8 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private String uid;
     private String username;
@@ -8,6 +11,7 @@ public class User {
     private String phoneNo;
     private String city;
     private String state;
+    private ArrayList<String> postRequests;
 
     public User() {
     }
@@ -20,6 +24,7 @@ public class User {
         this.city = city;
         this.state = state;
         this.profilePicUrl = "";
+        this.postRequests = new ArrayList<String>(3);
     }
 
     public String getUid() {
@@ -50,6 +55,9 @@ public class User {
         return state;
     }
 
+    public ArrayList<String> getPostRequests() {
+        return postRequests;
+    }
 
     public void setUid(String uid) {
         this.uid = uid;
@@ -71,4 +79,7 @@ public class User {
         this.state = state;
     }
 
+    public void setPostRequests(ArrayList<String> postRequests) {
+        this.postRequests = postRequests;
+    }
 }
