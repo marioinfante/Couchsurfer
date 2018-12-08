@@ -34,6 +34,9 @@
         <activity android:name=".LogInActivity" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".NewPostActivity"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAM5jYMG1y3daxJFab1JI_S1QkaeR-GIrY"/>
     </application>
 
 </manifest>
