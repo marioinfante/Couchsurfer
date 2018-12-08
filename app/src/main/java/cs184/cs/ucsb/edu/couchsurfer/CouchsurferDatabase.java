@@ -11,19 +11,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class CouchsurferDatabase {
     private DatabaseReference rootRef;
     private DatabaseReference postsRef;
+    private DatabaseReference usersRef;
     private PostFactory factory;
     private CouchPost triggerQuery;
 
     public CouchsurferDatabase() {
         rootRef = FirebaseDatabase.getInstance().getReference();
         postsRef = rootRef.child("posts");
+        usersRef = rootRef.child("users");
         factory = new DefaultPostFactory();
         triggerQuery = factory.createPost("", "", "", 0, 0,0, new Date(), new Date(),"","", false);
     }
@@ -40,6 +44,21 @@ public class CouchsurferDatabase {
         return post;
     }
 
+    public User addUser(User user){
+        HashMap<String, String> userMap = makeUserMap(user);
+        String userId = user.getUid();
+        usersRef.child(userId).setValue(userMap);
+
+        ArrayList<String> postRequests;
+        postRequests = user.getPostRequests();
+        int numRequests = postRequests.size();
+        for(int i = 0; i < numRequests; i++){
+            usersRef.child(userId).child("requests").child(Integer.toString(i + 1)).setValue(postRequests.get(i));
+        }
+
+        return user;
+    }
+
     public void bookPost(String postId, String booker){
         postsRef.child(postId).child("booker").setValue(booker);
         postsRef.child(postId).child("accepted").setValue("true");
@@ -50,8 +69,26 @@ public class CouchsurferDatabase {
         postsRef.child(postId).child("accepted").setValue("false");
     }
 
+    public void addPostRequest(String userId, final String postId) {
+        usersRef.child(userId).child("requests").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long numChildren = dataSnapshot.getChildrenCount();
+                dataSnapshot.getRef().child(Long.toString(numChildren + 1)).setValue(postId);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void deletePost(String postId){
         postsRef.child(postId).removeValue();
+    }
+    public void deleteUser(String userId){
+        usersRef.child(userId).removeValue();
     }
 
     public void updatePostDescription(String postId, String newDescription){
@@ -76,6 +113,18 @@ public class CouchsurferDatabase {
         postMap.put("booker", post.getBooker());
         postMap.put("accepted", "false");
         return postMap;
+    }
+
+    private HashMap<String, String> makeUserMap(User user) {
+        HashMap<String, String> userMap = new HashMap<>();
+        userMap.put("uid", user.getUid());
+        userMap.put("username", user.getUsername());
+        userMap.put("profilePicUrl", user.getProfilePicUrl());
+        userMap.put("fullName", user.getFullName());
+        userMap.put("phoneNo", user.getPhoneNo());
+        userMap.put("city", user.getCity());
+        userMap.put("state", user.getState());
+        return userMap;
     }
 
     public DatabaseReference getRoot() { return rootRef; }
