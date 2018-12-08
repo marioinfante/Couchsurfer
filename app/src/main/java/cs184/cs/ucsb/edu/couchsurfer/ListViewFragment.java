@@ -1,7 +1,9 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,10 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 
 import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
 
 public class ListViewFragment extends Fragment {
+
+    FloatingActionButton newPostButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -44,6 +49,15 @@ public class ListViewFragment extends Fragment {
             }
         });
 
+        newPostButton = getView().findViewById(R.id.newPostButton);
+        newPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newPostIntent = new Intent(getActivity(), NewPostActivity.class );
+                //navigationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(newPostIntent);
+            }
+        });
 
         // Setup any handles to view objects here
         // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);

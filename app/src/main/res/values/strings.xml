@@ -4,4 +4,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="new_post_title">NEW COUCHSURFER LISTING</string>
     <string name="price">PRICE</string>
+    <string name="description">DESCRIPTION</string>
+    <string name="location">LOCATION</string>
+    <string name="post_listing">SUBMIT MY POST</string>
 </resources>

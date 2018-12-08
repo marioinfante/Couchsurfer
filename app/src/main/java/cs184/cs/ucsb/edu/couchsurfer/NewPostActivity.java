@@ -1,23 +1,28 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.app.DatePickerDialog;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class NewPostActivity extends AppCompatActivity implements View.OnClickListener {
 
     private int year, month, day;
 
-    private Button dateButton;
+    private Button dateButton, postButton;
+    private FloatingActionButton photoButton;
     private TextView titleTextView, dateTextView;
-    private EditText priceEditText;
+    private EditText priceEditText, descriptionEditText, locationEditText;
+    private ImageView photoImageView;
 
     private DatePickerDialogListener dateListener;
 
@@ -34,11 +39,20 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
         dateListener = new DatePickerDialogListener();
 
         dateButton = findViewById(R.id.dateButton);
+        postButton = findViewById(R.id.postButton);
+        photoButton = findViewById(R.id.photoButton);
         titleTextView = findViewById(R.id.titleTextView);
         dateTextView = findViewById(R.id.dateTextView);
         priceEditText = findViewById(R.id.priceEditText);
+        descriptionEditText = findViewById(R.id.descriptionEditText);
+        locationEditText = findViewById(R.id.locationEditText);
+        photoImageView = (ImageView) findViewById(R.id.photoImageView);
 
         dateButton.setOnClickListener(this);
+        postButton.setOnClickListener(this);
+        photoButton.setOnClickListener(this);
+
+
 
     }
 
@@ -55,6 +69,10 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
                 DatePickerDialog datePickerDialog = new DatePickerDialog(NewPostActivity.this, dateListener,
                         NewPostActivity.this.year, NewPostActivity.this.month, NewPostActivity.this.day);
                 datePickerDialog.show();
+                break;
+            case R.id.postButton:
+                break;
+            case R.id.photoButton:
                 break;
         }
     }
