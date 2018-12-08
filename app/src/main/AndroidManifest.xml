@@ -33,6 +33,10 @@
         </activity>
         <activity android:name=".LogInActivity" />
         <activity android:name=".SignUpActivity" />
+<<<<<<< HEAD
+=======
+        <activity android:name=".NewPostActivity"></activity>
+>>>>>>> e63031e8f8abedbbe5429fa50c37b634c8eb7b3e
     </application>
 
 </manifest>
