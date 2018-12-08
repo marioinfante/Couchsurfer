@@ -78,7 +78,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_account_box_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_assignment_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -88,7 +88,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="default_profile_pic" />
+                            <entry key="outputName" value="ic_my_listings" />
                             <entry key="sourceFile" value="$USER_HOME$" />
                           </map>
                         </option>
