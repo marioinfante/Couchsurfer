@@ -34,6 +34,7 @@
         </activity>
         <activity android:name=".LogInActivity" />
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".EditProfileActivity" />
         <activity android:name=".NewPostActivity"></activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"

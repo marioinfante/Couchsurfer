@@ -12,10 +12,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ListViewFragment listViewFragment;
     public MapViewFragment mapViewFragment;
     public FilterFragment filterFragment;
+    public ProfileFragment profileFragment;
     public static CustomAdapter adapter;
 
     // Filter Variables
@@ -41,8 +57,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CouchsurferDatabase couchsurferDatabase;
     ActionBarDrawerToggle drawerToggle;
 
+    View headerLayout;
+    ImageView headerProfilePic;
+    TextView headerName;
+
+    FirebaseUser currentUser;
+    private DatabaseReference dbRef;
+
     FragmentManager fm;
     FragmentTransaction ft;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +92,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-
+        headerLayout = nvDrawer.inflateHeaderView(R.layout.nav_header);
+        headerProfilePic = headerLayout.findViewById(R.id.profilePicIV);
+        headerName = headerLayout.findViewById(R.id.nameTV);
+        setHeaderInfo();
+      
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
 
         mapViewFragment = new MapViewFragment();
         listViewFragment = new ListViewFragment();
         filterFragment = new FilterFragment();
+        profileFragment = new ProfileFragment();
         startListViewFragment();
     }
 
@@ -120,7 +149,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         switch (item.getItemId()) {
-
+            case R.id.nav_profile_fragment:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, profileFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
             case R.id.nav_search_fragment:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.flContent, listViewFragment);
@@ -145,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ft.addToBackStack(null);
                 ft.commit();
         }
-
+      
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
         // Set action bar title
@@ -177,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
 
-
         // Start the listview
         ft.add(R.id.flContent, listViewFragment);
         ft.commit();
@@ -188,5 +221,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ft.replace(R.id.flContent, listViewFragment);
         ft.addToBackStack(null);
         ft.commit();
+    }
+    public void setHeaderInfo() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
+
+        if (currentUser != null) {
+            Query query =  dbRef.child(currentUser.getUid());
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Glide.with(headerLayout)
+                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
+                                .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
+                                .into(headerProfilePic);
+                        headerName.setText(dataSnapshot.getValue(User.class).getFullName());
+                    }
+                    else {
+                        Log.wtf("mytag", "dataSnapshot does not exists");
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("[Database Error]", databaseError.getMessage());
+                }
+            });
+        }
     }
 }

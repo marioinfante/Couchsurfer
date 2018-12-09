@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:openDrawer="start"
     tools:context=".MainActivity">
 
     <android.support.v4.widget.DrawerLayout
@@ -43,7 +44,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@android:color/white"
-            app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_view" />
     </android.support.v4.widget.DrawerLayout>
 

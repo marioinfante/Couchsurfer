@@ -26,7 +26,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     private FirebaseAuth mAuth;
 
-    //private static HitchDatabase db = new HitchDatabase();
+    private static CouchsurferDatabase db = new CouchsurferDatabase();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +93,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     String state = stateText.getText().toString().trim();
                     String phoneNo = phoneNoText.getText().toString().trim();
                     User user = new User(fbUser.getUid(), username, fullName, phoneNo, city, state);
-                    //db.addUser(user);
+                    db.addUser(user);
+                    finish();
+                    /*
                     Intent logInIntent = new Intent(getApplicationContext(), LogInActivity.class);
                     startActivity(logInIntent);
+                    */
                 }
                 else {
                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {
