@@ -1,16 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="192dp"
         android:background="?attr/colorPrimaryDark"
+        android:gravity="bottom"
+        android:orientation="vertical"
         android:padding="16dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        android:orientation="vertical"
-        android:gravity="bottom">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+        <ImageView
+            android:id="@+id/profilePicIV"
+            android:layout_width="136dp"
+            android:layout_height="112dp"
+            android:clickable="true"
+            android:src="@drawable/default_profile_pic" />
+
+        <TextView
+            android:id="@+id/nameTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingLeft="12dp"
+            android:textSize="25dp"
+            android:text="Name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#ffffff" />
+
 
     </LinearLayout>
 

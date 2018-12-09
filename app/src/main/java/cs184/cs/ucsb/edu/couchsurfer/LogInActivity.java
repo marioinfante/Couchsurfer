@@ -2,6 +2,7 @@ package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -79,7 +80,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
                     finish();
                     Log.e("TAG", "successful login");
                 }
-
                 else {
                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.INVISIBLE);

@@ -6,15 +6,30 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +44,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
     DrawerLayout mDrawer;
     NavigationView nvDrawer;
-
     ActionBarDrawerToggle drawerToggle;
+
+    View headerLayout;
+    ImageView headerProfilePic;
+    TextView headerName;
+
+    FirebaseUser currentUser;
+    private DatabaseReference dbRef;
 
     FragmentManager fm;
     FragmentTransaction ft;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +79,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-
+        headerLayout = nvDrawer.inflateHeaderView(R.layout.nav_header);
+        headerProfilePic = headerLayout.findViewById(R.id.profilePicIV);
+        headerName = headerLayout.findViewById(R.id.nameTV);
+        setHeaderInfo();
+      
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
 
@@ -109,7 +135,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         switch (item.getItemId()) {
-
+            case R.id.nav_profile_fragment:
+                fragmentClass = ProfileFragment.class;
             case R.id.nav_search_fragment:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.flContent, listViewFragment);
@@ -134,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ft.addToBackStack(null);
                 ft.commit();
         }
-
+      
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
         // Set action bar title
@@ -165,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         couches = new ArrayList<>();
 
         couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
-
 
         // Start the listview
         ft.add(R.id.flContent, listViewFragment);
