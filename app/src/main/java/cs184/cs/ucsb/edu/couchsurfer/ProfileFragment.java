@@ -1,8 +1,10 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +22,17 @@ import android.util.Log;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.graphics.BitmapFactory;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
-//import com.bumptech.glide.Glide;
-//import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,10 +41,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth;
-//import com.google.firebase.storage.StorageReference;
 import com.google.firebase.database.Query;
-//import com.google.firebase.storage.FirebaseStorage;
-//import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
 
@@ -51,12 +56,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private DatabaseReference dbRef;
     private FirebaseUser fbUser;
+    private StorageReference profileImageRef;
 
     FirebaseUser currentUser;
 
     private Uri imageUri;
     private String profileImageUrl;
     private String profileImgFileName;
+
+    View view;
 
     private OnFragmentInteractionListener mListener;
 
@@ -75,7 +83,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.profile_fragment, container, false);
+        view = inflater.inflate(R.layout.profile_fragment, container, false);
 
 
         profilePicIV = (ImageView)view.findViewById(R.id.profilePicIV);
@@ -91,7 +99,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference().child("users");
 
-
         if (currentUser != null) {
             Query query =  dbRef.child(currentUser.getUid());
             query.addValueEventListener(new ValueEventListener() {
@@ -104,14 +111,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         usernameTV.setText("@"+ dataSnapshot.getValue(User.class).getUsername());
                         phoneNoTV.setText("Phone: " + dataSnapshot.getValue(User.class).getPhoneNo());
                         emailTV.setText("Email: " + currentUser.getEmail());
-                        if (dataSnapshot.getValue(User.class).getProfilePicUrl() != "") {
-                            /*
-                            Glide.with(view)
-                                    .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
-                                    .apply(new RequestOptions().placeholder(R.drawable.default_pic))
-                                    .into(profilePicIV);
-                                    */
-                        }
+                        Glide.with(view)
+                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
+                                .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
+                                .into(profilePicIV);
+
                     }
                     else {
                         Log.wtf("mytag", "dataSnapshot does not exists");
@@ -154,7 +158,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-
                 if (items[item].equals("Choose from Library")) {
                     galleryIntent();
                 } else if (items[item].equals("Cancel")) {
@@ -192,35 +195,57 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     Toast.makeText(getActivity(), "Unable to open image", Toast.LENGTH_LONG).show();
                 }
             }
-            uploadImagetoFirebase();
+            uploadImagetoFirebaseStorage();
         }
         else {
             Log.wtf("ERROR: ", "data is null");
         }
     }
-
-    private void uploadImagetoFirebase() {
+    private void uploadImagetoFirebaseStorage() {
         profileImgFileName = imageUri.getLastPathSegment() + ".jpg";
-        /*
-        StorageReference profileImageRef = FirebaseStorage.getInstance().getReference().child("profilepics/" + profileImgFileName);
+        profileImageRef = FirebaseStorage.getInstance().getReference().child("profilepics/" + profileImgFileName);
         if (imageUri != null) {
             profileImageRef.putFile(imageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            profileImageUrl = taskSnapshot.getDownloadUrl().toString();
-                            saveUserInformation();
                             Log.wtf("MSG: ", "File successfully uploaded to firebase");
+                            saveUserInformation();
                         }
                     });
         }
-        */
     }
 
     private void saveUserInformation() {
+        if (profileImgFileName != null) {
+            Log.e("TAG", "profileImgFileName: " + profileImgFileName);
+            Log.e("TAG", "TAG" + profileImageRef.getDownloadUrl());
+            profileImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Log.wtf("MSG: ", "GOT URL: " + uri);
+                    Map<String, Object> userUpdates = new HashMap<>();
+                    userUpdates.put("profilePicUrl", uri.toString());
+                    if (profileImgFileName != null) {
+                        dbRef.child(currentUser.getUid()).updateChildren(userUpdates)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.wtf("MSG: ", "SUCCESSFULLY ADDED TO DATABASE");
+                                    }
+                                });
+                    }
+                }
+            });
+        }
+        else {
+                Log.wtf("ERROR: ", "profileImageUrl is null");
+            }
+
+        /*
         Map<String, Object> userUpdates = new HashMap<>();
         userUpdates.put("profilePicUrl", profileImageUrl);
-        if (profileImageUrl != null) {
+        if (profileImgFileName != null) {
             dbRef.child(currentUser.getUid()).updateChildren(userUpdates)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -232,7 +257,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         else {
             Log.wtf("ERROR: ", "profileImageUrl is null");
         }
-        ;    }
+        */
+    }
 
 
     @Override

@@ -40,13 +40,13 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
     @Override
     public void onClick(View v) {
         int position = (Integer) v.getTag();
-        //Couch couch = getItem(position);
+        CouchPost couch = getItem(position);
 
         switch (v.getId())
         {
             case R.id.row_description:
-                //Snackbar.make(v, "Author " + couch.author, Snackbar.LENGTH_LONG)
-                        //.setAction("No action", null).show();
+                Snackbar.make(v, "Author " + couch.getAuthor(), Snackbar.LENGTH_LONG)
+                        .setAction("No action", null).show();
                 break;
         }
     }
@@ -93,9 +93,4 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
         // Return the completed view to render on screen
         return convertView;
     }
-/*
-    public void addToDataset(Couch couch){
-        dataSet.add(couch);
-    }
-    */
 }
