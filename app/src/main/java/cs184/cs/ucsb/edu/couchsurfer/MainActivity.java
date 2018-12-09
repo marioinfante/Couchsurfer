@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ListView listview;
     public ListViewFragment listViewFragment;
     public MapViewFragment mapViewFragment;
+    public ProfileFragment profileFragment;
     public static CustomAdapter adapter;
 
     Toolbar toolbar;
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mapViewFragment = new MapViewFragment();
         listViewFragment = new ListViewFragment();
+        profileFragment = new ProfileFragment();
         startListViewFragment();
     }
 
@@ -136,7 +139,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Create a new fragment and specify the fragment to show based on nav item clicked
         switch (item.getItemId()) {
             case R.id.nav_profile_fragment:
-                fragmentClass = ProfileFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, profileFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
             case R.id.nav_search_fragment:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.flContent, listViewFragment);
@@ -196,6 +203,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Start the listview
         ft.add(R.id.flContent, listViewFragment);
         ft.commit();
+    }
+
+    public void setHeaderInfo() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
+
+        if (currentUser != null) {
+            Query query =  dbRef.child(currentUser.getUid());
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Glide.with(headerLayout)
+                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
+                                .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
+                                .into(headerProfilePic);
+                        headerName.setText(dataSnapshot.getValue(User.class).getFullName());
+                    }
+                    else {
+                        Log.wtf("mytag", "dataSnapshot does not exists");
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("[Database Error]", databaseError.getMessage());
+                }
+            });
+        }
     }
 
 }

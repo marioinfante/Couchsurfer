@@ -12,9 +12,7 @@
         android:gravity="bottom"
         android:orientation="vertical"
         android:padding="16dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
         <ImageView
             android:id="@+id/profilePicIV"
