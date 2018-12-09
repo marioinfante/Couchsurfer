@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,8 +46,9 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
         switch (v.getId())
         {
             case R.id.row_description:
-                Snackbar.make(v, "Author " + couch.getAuthor(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
+                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(0);
+                viewPostDialogFragment.show(fm, "rating_fragment");
                 break;
         }
     }
