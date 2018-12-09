@@ -15,9 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import android.view.View;
-import android.widget.ImageView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -218,13 +215,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ft.add(R.id.flContent, listViewFragment);
         ft.commit();
     }
-
+  
     public void defaultFragment(){
         ft = fm.beginTransaction();
         ft.replace(R.id.flContent, listViewFragment);
         ft.addToBackStack(null);
         ft.commit();
     }
+
     public void setHeaderInfo() {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference().child("users");
@@ -252,4 +250,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
     }
+
 }
