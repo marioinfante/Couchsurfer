@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewPostActivity">
+
+    <TextView
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="37dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="Filters"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/filter_datebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="274dp"
+        android:text="Choose Date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filter_datetv"
+        android:layout_width="191dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="42dp"
+        android:gravity="left|center"
+        android:text="availability"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/filter_savebutton"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/priceTextView2"
+        android:layout_width="114dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="14dp"
+        android:capitalize="words"
+        android:gravity="center"
+        android:text="Min. Price Max. Price"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/priceTextView3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filter" />
+
+    <TextView
+        android:id="@+id/priceTextView3"
+        android:layout_width="130dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="14dp"
+        android:capitalize="words"
+        android:gravity="center"
+        android:text="Distance (mi.)"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/filter_datebutton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/filter_minprice"
+        android:layout_width="181dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="95dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:ems="10"
+        android:hint="xx.xx"
+        android:inputType="numberDecimal"
+        app:layout_constraintBottom_toTopOf="@+id/filter_maxprice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/filter_maxprice"
+        android:layout_width="181dp"
+        android:layout_height="39dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:ems="10"
+        android:hint="xx.xx"
+        android:inputType="numberDecimal"
+        app:layout_constraintBottom_toTopOf="@+id/filter_miles"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/filter_miles"
+        android:layout_width="181dp"
+        android:layout_height="39dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:ems="10"
+        android:hint="miles"
+        android:inputType="number"
+        app:layout_constraintBottom_toTopOf="@+id/filter_datetv"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/filter_savebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="184dp"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
