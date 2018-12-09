@@ -55,7 +55,6 @@ public class CouchsurferDatabase {
         for(int i = 0; i < numRequests; i++){
             usersRef.child(userId).child("requests").child(Integer.toString(i + 1)).setValue(postRequests.get(i));
         }
-
         return user;
     }
 
@@ -76,11 +75,8 @@ public class CouchsurferDatabase {
                 long numChildren = dataSnapshot.getChildrenCount();
                 dataSnapshot.getRef().child(Long.toString(numChildren + 1)).setValue(postId);
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
@@ -89,6 +85,10 @@ public class CouchsurferDatabase {
     }
     public void deleteUser(String userId){
         usersRef.child(userId).removeValue();
+    }
+
+    public void updateUserRating(String userId, int rating) {
+        usersRef.child(userId).child("rating").setValue(rating);
     }
 
     public void updatePostDescription(String postId, String newDescription){
@@ -124,6 +124,7 @@ public class CouchsurferDatabase {
         userMap.put("phoneNo", user.getPhoneNo());
         userMap.put("city", user.getCity());
         userMap.put("state", user.getState());
+        userMap.put("rating", Integer.toString(user.getRating()));
         return userMap;
     }
 

@@ -7,20 +7,6 @@
     tools:context=".NewPostActivity">
 
     <TextView
-        android:id="@+id/locationTextView"
-        android:layout_width="130dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="112dp"
-        android:capitalize="words"
-        android:gravity="center"
-        android:text="@string/location"
-        android:textColor="@color/colorPrimary"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionTextView" />
-
-    <TextView
         android:id="@+id/descriptionTextView"
         android:layout_width="130dp"
         android:layout_height="37dp"
@@ -120,6 +106,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:ems="10"
+        android:gravity="top"
         android:inputType="textMultiLine"
         app:layout_constraintStart_toEndOf="@+id/descriptionTextView"
         app:layout_constraintTop_toBottomOf="@+id/priceEditText" />
@@ -128,33 +115,22 @@
         android:id="@+id/photoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="64dp"
         android:clickable="true"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationTextView"
+        app:layout_constraintTop_toBottomOf="@+id/locationButton"
         app:srcCompat="@android:drawable/ic_menu_camera" />
-
-    <EditText
-        android:id="@+id/locationEditText"
-        android:layout_width="193dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toEndOf="@+id/locationTextView"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionEditText" />
 
     <ImageView
         android:id="@+id/photoImageView"
         android:layout_width="191dp"
         android:layout_height="113dp"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="68dp"
         android:layout_marginTop="28dp"
         app:layout_constraintStart_toEndOf="@+id/photoButton"
-        app:layout_constraintTop_toBottomOf="@+id/locationEditText"
+        app:layout_constraintTop_toBottomOf="@+id/locationTextView"
         app:srcCompat="@color/common_google_signin_btn_text_dark_default" />
 
     <Button
@@ -168,4 +144,25 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/locationButton"
+        android:layout_width="119dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="108dp"
+        android:text="LOCATION"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionTextView" />
+
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="189dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="16dp"
+        android:gravity="left|center"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/locationButton"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionEditText" />
 </android.support.constraint.ConstraintLayout>

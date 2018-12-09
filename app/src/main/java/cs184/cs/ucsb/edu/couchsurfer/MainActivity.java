@@ -37,6 +37,8 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public ArrayList<CouchPost> couches;
     public ListView listview;
+    public ListViewFragment listViewFragment;
+    public MapViewFragment mapViewFragment;
     public static CustomAdapter adapter;
 
     Toolbar toolbar;
@@ -51,10 +53,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FirebaseUser currentUser;
     private DatabaseReference dbRef;
 
+    FragmentManager fm;
+    FragmentTransaction ft;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
 
         // Attaching the layout to the toolbar object
         toolbar = findViewById(R.id.tool_bar);
@@ -74,11 +83,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         headerProfilePic = headerLayout.findViewById(R.id.profilePicIV);
         headerName = headerLayout.findViewById(R.id.nameTV);
         setHeaderInfo();
-
-        // Start login activity
+      
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
 
+        mapViewFragment = new MapViewFragment();
+        listViewFragment = new ListViewFragment();
         startListViewFragment();
     }
 
@@ -124,40 +134,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
-        Class fragmentClass;
         switch (item.getItemId()) {
-            case R.id.nav_search_fragment:
-                startListViewFragment();
-                fragmentClass = ListViewFragment.class;
-                break;
             case R.id.nav_profile_fragment:
                 fragmentClass = ProfileFragment.class;
+            case R.id.nav_search_fragment:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, listViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
-
             case R.id.nav_maps_fragment:
-                fragmentClass = ProfileFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, mapViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
             case R.id.nav_myListings_fragment:
-                fragmentClass = ProfileFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, listViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
-
             default:
-                startListViewFragment();
-                fragmentClass = ListViewFragment.class;
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, listViewFragment);
+                ft.addToBackStack(null);
+                ft.commit();
         }
-
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
-
+      
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
         // Set action bar title
@@ -190,43 +194,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
 
         // Start the listview
-        Class fragmentClass = ListViewFragment.class;
-        Fragment fragment = new Fragment();
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        ft.add(R.id.flContent, listViewFragment);
+        ft.commit();
     }
 
-    public void setHeaderInfo() {
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
-
-        if (currentUser != null) {
-            Query query =  dbRef.child(currentUser.getUid());
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Glide.with(headerLayout)
-                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
-                                .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
-                                .into(headerProfilePic);
-                        headerName.setText(dataSnapshot.getValue(User.class).getFullName());
-                    }
-                    else {
-                        Log.wtf("mytag", "dataSnapshot does not exists");
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("[Database Error]", databaseError.getMessage());
-                }
-            });
-        }
-    }
 }
