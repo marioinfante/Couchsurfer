@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,8 +45,9 @@ public class ListViewFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 CouchPost couch = main.couches.get(position);
-                Snackbar.make(view, couch.getAuthor(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
+                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(0);
+                viewPostDialogFragment.show(fm, "rating_fragment");
             }
         });
 

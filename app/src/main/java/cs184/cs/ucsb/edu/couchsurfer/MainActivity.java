@@ -40,12 +40,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ListView listview;
     public ListViewFragment listViewFragment;
     public MapViewFragment mapViewFragment;
+    public FilterFragment filterFragment;
     public ProfileFragment profileFragment;
     public static CustomAdapter adapter;
+
+    // Filter Variables
+    public Date fDate;
+    public double fPriceMin;
+    public double fPriceMax;
+    public double fDistance;
+
 
     Toolbar toolbar;
     DrawerLayout mDrawer;
     NavigationView nvDrawer;
+    CouchsurferDatabase couchsurferDatabase;
     ActionBarDrawerToggle drawerToggle;
 
     View headerLayout;
@@ -63,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        couchsurferDatabase = new CouchsurferDatabase();
 
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
@@ -91,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mapViewFragment = new MapViewFragment();
         listViewFragment = new ListViewFragment();
+        filterFragment = new FilterFragment();
         profileFragment = new ProfileFragment();
         startListViewFragment();
     }
@@ -117,17 +129,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);
                 return true;
+            case R.id.filter_button:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, filterFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -202,6 +213,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Start the listview
         ft.add(R.id.flContent, listViewFragment);
+        ft.commit();
+    }
+  
+    public void defaultFragment(){
+        ft = fm.beginTransaction();
+        ft.replace(R.id.flContent, listViewFragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 

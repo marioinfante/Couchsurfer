@@ -39,6 +39,7 @@ import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
+
     public HashMap<String, Marker> markers;
     public MainActivity main;
     DatabaseReference db;
