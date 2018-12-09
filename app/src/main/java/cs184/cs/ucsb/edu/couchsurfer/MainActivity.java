@@ -11,12 +11,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +45,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle drawerToggle;
 
     View headerLayout;
-    ImageView profilePic;
+    ImageView headerProfilePic;
+    TextView headerName;
+
+    FirebaseUser currentUser;
+    private DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,21 +71,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerToggle.syncState();
 
         headerLayout = nvDrawer.inflateHeaderView(R.layout.nav_header);
-        profilePic = headerLayout.findViewById(R.id.profilePicIV);
-        profilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Class fragmentClass = ProfileFragment.class;
-                Fragment fragment = new Fragment();
-                try {
-                    fragment = (Fragment) fragmentClass.newInstance();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-            }
-        });
+        headerProfilePic = headerLayout.findViewById(R.id.profilePicIV);
+        headerName = headerLayout.findViewById(R.id.nameTV);
+        setHeaderInfo();
 
         // Start login activity
         Intent intent = new Intent(this, LogInActivity.class);
@@ -195,5 +200,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+    }
+
+    public void setHeaderInfo() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
+
+        if (currentUser != null) {
+            Query query =  dbRef.child(currentUser.getUid());
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Glide.with(headerLayout)
+                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
+                                .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
+                                .into(headerProfilePic);
+                        headerName.setText(dataSnapshot.getValue(User.class).getFullName());
+                    }
+                    else {
+                        Log.wtf("mytag", "dataSnapshot does not exists");
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("[Database Error]", databaseError.getMessage());
+                }
+            });
+        }
     }
 }
