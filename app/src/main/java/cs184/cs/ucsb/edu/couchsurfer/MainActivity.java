@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public ArrayList<CouchPost> couches;
     public ListView listview;
     public ListViewFragment listViewFragment;
     public MapViewFragment mapViewFragment;
@@ -44,11 +43,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ProfileFragment profileFragment;
     public static CustomAdapter adapter;
 
-    // Filter Variables
+    // Filter Variables, default values (cuz i dont want to error check)
     public Date fDate;
-    public double fPriceMin;
-    public double fPriceMax;
-    public double fDistance;
+    public double fPriceMin = 0;
+    public double fPriceMax = 999999;
+    public double fDistance = 999999;
 
 
     Toolbar toolbar;
@@ -104,7 +103,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listViewFragment = new ListViewFragment();
         filterFragment = new FilterFragment();
         profileFragment = new ProfileFragment();
-        startListViewFragment();
+
+        // Start the listview
+        ft.add(R.id.flContent, listViewFragment);
+        ft.commit();
     }
 
     @Override
@@ -190,29 +192,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void startListViewFragment(){
-        // Populate Data
-        String author = "Mathew Matt";
-        String uid = "mattymatt";
-        String description = "This is a luxury couch fit for a king";
-        double longitude = -119.854267;
-        double latitude = 34.411697;
-        double price = 20.20;
-        String startDate = "12/01/18";
-        String endDate = "12/02/18";
-        Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/" + R.drawable.sample_7);
-        Boolean accepted = false;
-        String booker = "Lindsey";
-
-        couches = new ArrayList<>();
-
-        couches.add(new CouchPost(author,uid,description,longitude,latitude, price,startDate,endDate,uri,booker,accepted));
-
-        // Start the listview
-        ft.add(R.id.flContent, listViewFragment);
-        ft.commit();
-    }
-  
     public void defaultFragment(){
         ft = fm.beginTransaction();
         ft.replace(R.id.flContent, listViewFragment);
@@ -247,5 +226,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
     }
-
 }

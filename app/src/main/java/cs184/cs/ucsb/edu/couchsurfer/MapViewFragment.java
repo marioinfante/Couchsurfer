@@ -40,7 +40,7 @@ import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
 
-    public HashMap<String, Marker> markers;
+    public HashMap<String, Marker> markers, filteredMarkers;
     public MainActivity main;
     DatabaseReference db;
 
@@ -91,6 +91,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 }
                 markers.put(postId, mMap.addMarker(markerOptions));
+
+                filterMarkers();
             }
 
             @Override
@@ -112,6 +114,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 } else {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 }
+
+                filterMarkers();
             }
 
             @Override
@@ -120,6 +124,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 Marker currMarker = markers.get(postId);
                 markers.remove(postId);
                 currMarker.remove();
+
+                filterMarkers();
             }
 
             @Override
@@ -151,6 +157,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     public void refreshData(){
         // rrefresh data
+    }
+
+    public void filterMarkers(){
+        // main.fDistance
     }
 
 }

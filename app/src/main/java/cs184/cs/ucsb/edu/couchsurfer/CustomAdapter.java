@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,13 @@ import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import com.squareup.picasso.Picasso;
 
-public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnClickListener{
+public class CustomAdapter extends ArrayAdapter<CouchPost>{
 
     private ArrayList<CouchPost> dataSet;
     Context mContext;
@@ -36,21 +39,6 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
         super(context, R.layout.row_item, data);
         this.dataSet = data;
         this.mContext=context;
-    }
-
-    @Override
-    public void onClick(View v) {
-        int position = (Integer) v.getTag();
-        CouchPost couch = getItem(position);
-
-        switch (v.getId())
-        {
-            case R.id.row_description:
-                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
-                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(0);
-                viewPostDialogFragment.show(fm, "rating_fragment");
-                break;
-        }
     }
 
     private int lastPosition = -1;
@@ -86,7 +74,8 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
         lastPosition = position;
 
         viewHolder.description.setText(couch.getDescription());
-        viewHolder.price.setText( ((Double)couch.getPrice()).toString());
+        String formattedPrice = BigDecimal.valueOf(couch.getPrice()).setScale(2, RoundingMode.HALF_UP).toString();
+        viewHolder.price.setText(formattedPrice);
         viewHolder.picture.setTag(position);
         Picasso.with(mContext)
                 .load(couch.getPicture()).resize(500, 500)
@@ -94,5 +83,16 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    public void addToAdapter(CouchPost couch){
+        dataSet.add(couch);
+        this.notifyDataSetChanged();
+    }
+
+    public void changeDataset(ArrayList<CouchPost> couches){
+        dataSet.clear();
+        dataSet.addAll(couches);
+        this.notifyDataSetChanged();
     }
 }
