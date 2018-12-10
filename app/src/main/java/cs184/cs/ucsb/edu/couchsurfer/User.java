@@ -87,4 +87,8 @@ public class User {
 
     public void setRating(int rating) { this.rating = rating; }
 
+    public void setPhoneNo(String phoneNo){
+        this.phoneNo = phoneNo;
+    }
+
 }

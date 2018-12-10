@@ -3,6 +3,7 @@ package cs184.cs.ucsb.edu.couchsurfer;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class FilterFragment extends Fragment implements View.OnClickListener{
     MainActivity main;
@@ -50,25 +52,60 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view){
+
         switch (view.getId()){
+
             case R.id.filter_datebutton:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateListener,
                         FilterFragment.this.year, FilterFragment.this.month, FilterFragment.this.day);
                 datePickerDialog.show();
                 break;
+
             case R.id.filter_savebutton:
-                // Check if edit text is empty, skip empty fields
-                if(!fPriceMin.getText().toString().equals("")){
+                //Filter Minimum Price
+                if(!fPriceMin.getText().toString().isEmpty()){
+                    Log.d("tag","change pricemin, " + fPriceMin.getText().toString());
                     main.fPriceMin = Double.parseDouble(fPriceMin.getText().toString());
                 }
-                if(!fPriceMax.getText().toString().equals("")){
-                    main.fPriceMax = Double.parseDouble(fPriceMin.getText().toString());
+                else{
+                    // reset to default
+                    main.fPriceMin = 0;
                 }
-                if(!fDistance.getText().toString().equals("")){
+
+                // Filter Max Price
+                if(!fPriceMax.getText().toString().isEmpty()){
+                    Log.d("tag","change pricemax, " + fPriceMax.getText().toString());
+                    main.fPriceMax = Double.parseDouble(fPriceMax.getText().toString());
+                }
+                else{
+                    // reset to just a really big number
+                    main.fPriceMax = 99999;
+                }
+
+                // Filter Distance
+                if(!fDistance.getText().toString().isEmpty()){
+                    Log.d("tag","change distance, " + fDistance.getText().toString());
                     main.fDistance = Double.parseDouble(fDistance.getText().toString());
                 }
-                // Update data structure that listview and mapview use
-                // Close fragment
+                else{
+                    // reset to a big number
+                    main.fDistance = 99999;
+                }
+
+                // Filter Date
+                if(day != 0 && month != 0 && year != 0){
+                    Log.d("tag","change date, " + month + "/" + day + "/" + year);
+                    main.fDate = new Date();
+                    main.fDate.setMonth(month);
+                    main.fDate.setYear(year);
+                    main.fDate.setDate(day);
+                }
+                else{
+                    // set date to null for easy error checking
+                    main.fDate = null;
+                }
+
+                // Close fragment by reopening listview
                 main.defaultFragment();
                 break;
         }
@@ -81,7 +118,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
             FilterFragment.this.setYear(year);
             FilterFragment.this.setMonth(monthOfYear);
             FilterFragment.this.setDay(dayOfMonth);
-            fDate.setText((monthOfYear + 1) + "/" + dayOfMonth + "/" + year);
+            fDate.setText((monthOfYear + 1) + "/" + dayOfMonth + "/" + (year));
         }
     }
 
