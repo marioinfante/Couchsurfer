@@ -9,13 +9,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:background="#E0F2F1">
+        android:background="@color/colorAccentLight">
 
         <LinearLayout
+            android:id="@+id/profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/profile">
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/editProfileBtn"

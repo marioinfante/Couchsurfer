@@ -40,6 +40,7 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
     private static final int SELECT_FILE = 20;
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
+    private int currYear, currMonth, currDay;
     private int year, month, day;
     private LatLng latlng;
 
@@ -62,6 +63,10 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
         day = c.get(Calendar.DAY_OF_MONTH - 1);
+
+        currYear = year;
+        currMonth = month;
+        currDay = day;
 
         dateListener = new DatePickerDialogListener();
         latlng = new LatLng(0, 0);
@@ -109,8 +114,6 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
                 chooseImage();
                 break;
             case R.id.postButton:
-                Date currDate = new Date();
-
                 try{
                     Double.parseDouble(priceEditText.getText().toString());
                 }catch(NumberFormatException ex){
@@ -118,16 +121,19 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 }
 
-                if(currDate.getYear() + 1900 > year){
-                    Toast.makeText(getApplicationContext(), "Please choose a date in the future", Toast.LENGTH_SHORT).show();
+                if(currYear > year){
+                    Toast.makeText(getApplicationContext(), "Please choose a date in the future 1", Toast.LENGTH_SHORT).show();
+                    break;
                 }
-                else if(currDate.getYear() <= year){
-                    if(currDate.getMonth() > month){
-                        Toast.makeText(getApplicationContext(), "Please choose a date in the future", Toast.LENGTH_SHORT).show();
+                else if(currYear <= year){
+                    if(currMonth > month){
+                        Toast.makeText(getApplicationContext(), "Please choose a date in the future 2", Toast.LENGTH_SHORT).show();
+                        break;
                     }
                     else{
-                        if(currDate.getDay() >= day){
-                            Toast.makeText(getApplicationContext(), "Please choose a date in the future", Toast.LENGTH_SHORT).show();
+                        if(currDay >= day){
+                            Toast.makeText(getApplicationContext(), "Please choose a date in the future 3", Toast.LENGTH_SHORT).show();
+                            break;
                         }
                     }
                 }
@@ -147,9 +153,9 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
                     String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     String description = descriptionEditText.getText().toString();
                     Double price = Double.parseDouble(priceEditText.getText().toString());
-                    Date start = new Date(year, month, day);
-                    Date end = new Date(year, month, day + 1);
-                    CouchPost couch = pf.createPost(name, userId, description, latlng.longitude, latlng.latitude, price, start, end, imageUri.toString());
+                    String start = (month + 1) + "/" + day + "/" + year;
+                    String end = (month + 1) + "/" + (day + 1) + "/" + year;
+                    CouchPost couch = pf.createPost(name, userId, description, latlng.longitude, latlng.latitude, price, start, end, imageUri);
                     db.addPost(couch);
                     finish();
                 }
