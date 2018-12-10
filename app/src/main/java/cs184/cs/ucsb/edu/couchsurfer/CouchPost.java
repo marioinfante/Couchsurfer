@@ -88,6 +88,25 @@ public class CouchPost implements Post {
         return start_date;
     }
 
+    public Integer getStartDateDay() {
+        int firstIndex = start_date.indexOf("/");
+        String subs = start_date.substring(firstIndex + 1, start_date.length() - 1);
+        int secondIndex = subs.indexOf("/");
+        return Integer.parseInt(subs.substring(0, secondIndex - 1));
+    }
+
+    public Integer getStartDateMonth() {
+        int index = start_date.indexOf("/");
+        return Integer.parseInt(start_date.substring(0, index -1));
+    }
+
+    public Integer getStartDateYear() {
+        int firstIndex = start_date.indexOf("/");
+        String subs = start_date.substring(firstIndex + 1, start_date.length() - 1);
+        int secondIndex = subs.indexOf("/");
+        return Integer.parseInt(subs.substring(secondIndex + 1, subs.length() - 1));
+    }
+
     @Override
     public String getEnd_date() {
         return end_date;

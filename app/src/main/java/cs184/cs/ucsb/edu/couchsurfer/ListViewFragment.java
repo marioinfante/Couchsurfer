@@ -16,11 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -100,9 +103,9 @@ public class ListViewFragment extends Fragment {
 
         // POSTS
         db.child("posts").addChildEventListener(new ChildEventListener() {
-            String author, authorUid, description, booker, pictures, postId;
+            String author, authorUid, description, booker, postId;
             double latitude, longitude, price;
-            Date start_date, end_date;
+            String start_date, end_date;
             Boolean accepted = false;
 
             @Override
@@ -119,7 +122,6 @@ public class ListViewFragment extends Fragment {
                 }
                 description = dataSnapshot.child("description").getValue().toString();
                 booker = dataSnapshot.child("booker").getValue().toString();
-                pictures = dataSnapshot.child("picture").getValue().toString();
                 latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
                 longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                 postId = dataSnapshot.getKey();
@@ -128,18 +130,19 @@ public class ListViewFragment extends Fragment {
 
                 // Format Dates
                 // TODO may cause issues with new start_date string
-                DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-                try {
-                    start_date = format.parse(dataSnapshot.child("start_date").getValue().toString());
-                    start_date.setYear(start_date.getYear() - 100);
-                    start_date.setMonth(start_date.getMonth() + 1);
-                    end_date = format.parse(dataSnapshot.child("end_date").getValue().toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                CouchPost couch = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
-                couch.setPostId(postId);
-                adapter.addToAdapter(couch);
+                start_date = dataSnapshot.child("start_date").getValue().toString();
+                end_date = dataSnapshot.child("end_date").getValue().toString();
+
+                StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(dataSnapshot.child("picture").getValue().toString());
+                ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Uri photoUri = uri;
+                        CouchPost couch = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, photoUri, booker, accepted);
+                        couch.setPostId(postId);
+                        adapter.addToAdapter(couch);
+                    }
+                });
             }
 
             @Override
@@ -150,7 +153,6 @@ public class ListViewFragment extends Fragment {
                 author = users.get(authorUid).getFullName();
                 description = dataSnapshot.child("description").getValue().toString();
                 booker = dataSnapshot.child("booker").getValue().toString();
-                pictures = dataSnapshot.child("picture").getValue().toString();
                 latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
                 longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                 postId = dataSnapshot.getKey();
@@ -159,13 +161,8 @@ public class ListViewFragment extends Fragment {
 
                 // Format Dates
                 // TODO may cause issues with new start_date string
-                DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-                try {
-                    start_date = format.parse(dataSnapshot.child("start_date").getValue().toString());
-                    end_date = format.parse(dataSnapshot.child("end_date").getValue().toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                start_date = dataSnapshot.child("start_date").getValue().toString();
+                end_date = dataSnapshot.child("end_date").getValue().toString();
 
                 CouchPost couch = findCouchPost(postId);
 
@@ -179,9 +176,16 @@ public class ListViewFragment extends Fragment {
                     couch.setEnd_date(end_date);
                 }
                 else{
-                    couch = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
-                    couch.setPostId(postId);
-                    adapter.addToAdapter(couch);
+                    StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(dataSnapshot.child("picture").getValue().toString());
+                    ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Uri photoUri = uri;
+                            CouchPost couch = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, photoUri, booker, accepted);
+                            couch.setPostId(postId);
+                            adapter.addToAdapter(couch);
+                        }
+                    });
                 }
             }
 
@@ -284,9 +288,9 @@ public class ListViewFragment extends Fragment {
             }
             // Filter Date, must not be null AND be the same date
             if(main.fDate != null &&
-                (couches.get(i).getStart_date().getDay() != main.fDate.getDay() ||
-                couches.get(i).getStart_date().getMonth() != main.fDate.getMonth() ||
-                couches.get(i).getStart_date().getYear() != main.fDate.getYear()))
+                (couches.get(i).getStartDateDay() != main.fDate.getDay() ||
+                couches.get(i).getStartDateMonth() != main.fDate.getMonth() ||
+                couches.get(i).getStartDateYear() != main.fDate.getYear()))
             {
                 continue;
             }
