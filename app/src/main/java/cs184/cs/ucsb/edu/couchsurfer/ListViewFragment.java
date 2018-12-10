@@ -1,6 +1,5 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
@@ -8,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,12 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,14 +26,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
 
 public class ListViewFragment extends Fragment {
-
     MainActivity main;
     FloatingActionButton newPostButton;
     DatabaseReference db;
+    HashMap<String,User> users;
     public ArrayList<CouchPost> couches, filtered_couches;
 
     @Override
@@ -53,6 +46,7 @@ public class ListViewFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         main = (MainActivity) getActivity();
 
+        // Refresh just calls filter function
         final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -62,27 +56,29 @@ public class ListViewFragment extends Fragment {
             }
         });
 
-        // populates couches and filtered couches
-        populateData();
 
         couches = new ArrayList<>();
         adapter = new CustomAdapter(couches, getContext());
 
+        // populates couches and filtered couches
+        populateData();
+
         main.listview = view.findViewById(R.id.listview);
         main.listview.setAdapter(adapter);
+
+        // This is the code for when a row item is clicked
         main.listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 CouchPost couch = couches.get(position);
                 FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
-
                 // pass in couch args in here
-                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(0);
-
+                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(couch);
                 viewPostDialogFragment.show(fm, "dialog_fragment");
             }
         });
 
+        // NewPostActivity called here
         newPostButton = getView().findViewById(R.id.newPostButton);
         newPostButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,20 +90,47 @@ public class ListViewFragment extends Fragment {
         });
     }
 
+    // Firebase code and populating the arraylist
     public void populateData(){
         db = FirebaseDatabase.getInstance().getReference();
 
+        // POSTS
         db.child("posts").addChildEventListener(new ChildEventListener() {
-            // Populate Data
             String author, authorUid, description, booker, pictures, postId;
             double latitude, longitude, price;
             Date start_date, end_date;
-            Uri uri = Uri.parse("android.resource://" + getContext().getPackageName() + "/" + R.drawable.sample_7);
             Boolean accepted = false;
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d("tag", "On Child Added, " + couches.size());
+
+                authorUid = dataSnapshot.child("authorUid").getValue().toString();
+
+                // TODO Problem: What if users isn't populated yet?
+                author = users.get(authorUid).getFullName();
+
+                description = dataSnapshot.child("description").getValue().toString();
+                booker = dataSnapshot.child("booker").getValue().toString();
+                pictures = dataSnapshot.child("picture").getValue().toString();
+                latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
+                longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                postId = dataSnapshot.getKey();
+                price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
+                accepted = Boolean.parseBoolean(dataSnapshot.child("accepted").getValue().toString());
+
+                //TODO parse dates or just pull a string from DB
+                StringBuilder sb = new StringBuilder();
+                sb.append(dataSnapshot.child("start_date").getValue().toString());
+                start_date = new Date();
+                end_date = start_date;
+
+                adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, uri.toString(), booker, accepted));
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("tag","On Child Changed");
                 // TODO get author name
                 author = "";
                 authorUid = dataSnapshot.child("authorUid").getValue().toString();
@@ -122,6 +145,51 @@ public class ListViewFragment extends Fragment {
                 start_date = new Date();
                 end_date = new Date();
                 accepted = false;
+
+                Log.d("tag", couches.toString());
+
+                adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted));
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                // TODO remove from list
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        // USERS
+        db.child("users").addChildEventListener(new ChildEventListener() {
+            String uid, username, fullname, phoneno, city, state;
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d("tag", "On Child Added, " + couches.size());
+                // TODO get author name
+                author = "";
+                authorUid = dataSnapshot.child("authorUid").getValue().toString();
+                description = dataSnapshot.child("description").getValue().toString();
+                booker = dataSnapshot.child("booker").getValue().toString();
+                pictures = dataSnapshot.child("pictures").getValue().toString();
+                latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
+                longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                postId = dataSnapshot.getKey();
+                price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
+                accepted = Boolean.parseBoolean(dataSnapshot.child("accepted").getValue().toString());
+
+                //TODO parse dates or just pull a string from DB
+                start_date = new Date(2018,9,5);
+                end_date = start_date;
 
                 adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, uri.toString(), booker, accepted));
             }

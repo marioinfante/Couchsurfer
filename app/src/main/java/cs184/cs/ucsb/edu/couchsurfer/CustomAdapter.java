@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 import com.squareup.picasso.Picasso;
 
-public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnClickListener{
+public class CustomAdapter extends ArrayAdapter<CouchPost>{
 
     private ArrayList<CouchPost> dataSet;
     Context mContext;
@@ -38,21 +38,6 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
         Log.d("tag", "custom adapter constructor");
         this.dataSet = data;
         this.mContext=context;
-    }
-
-    @Override
-    public void onClick(View v) {
-        int position = (Integer) v.getTag();
-        CouchPost couch = getItem(position);
-
-        switch (v.getId())
-        {
-            case R.id.row_description:
-                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
-                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(0);
-                viewPostDialogFragment.show(fm, "rating_fragment");
-                break;
-        }
     }
 
     private int lastPosition = -1;
