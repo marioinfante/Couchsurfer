@@ -93,13 +93,15 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
                 .load(couch.getPicture()).resize(500, 500)
                 .into(viewHolder.pictureIV);
 
-
+        /*
         if (couch.getAccepted()) {
             viewHolder.statusTV.setText("Accepted");
         }
         else {
             viewHolder.statusTV.setText("Rejected");
         }
+        */
+
         viewHolder.cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
