@@ -24,9 +24,13 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
 
@@ -56,7 +60,7 @@ public class ListViewFragment extends Fragment {
             }
         });
 
-
+        users = new HashMap<>();
         couches = new ArrayList<>();
         adapter = new CustomAdapter(couches, getContext());
 
@@ -106,10 +110,13 @@ public class ListViewFragment extends Fragment {
                 Log.d("tag", "On Child Added, " + couches.size());
 
                 authorUid = dataSnapshot.child("authorUid").getValue().toString();
-
                 // TODO Problem: What if users isn't populated yet?
-                author = users.get(authorUid).getFullName();
-
+                if(users.get(authorUid) != null) {
+                    author = users.get(authorUid).getFullName();
+                }
+                else{
+                    author = "";
+                }
                 description = dataSnapshot.child("description").getValue().toString();
                 booker = dataSnapshot.child("booker").getValue().toString();
                 pictures = dataSnapshot.child("picture").getValue().toString();
@@ -119,42 +126,69 @@ public class ListViewFragment extends Fragment {
                 price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
                 accepted = Boolean.parseBoolean(dataSnapshot.child("accepted").getValue().toString());
 
-                //TODO parse dates or just pull a string from DB
-                StringBuilder sb = new StringBuilder();
-                sb.append(dataSnapshot.child("start_date").getValue().toString());
-                start_date = new Date();
-                end_date = start_date;
-
-                adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, uri.toString(), booker, accepted));
+                // Format Dates
+                // TODO may cause issues with new start_date string
+                DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+                try {
+                    start_date = format.parse(dataSnapshot.child("start_date").getValue().toString());
+                    start_date.setYear(start_date.getYear() - 100);
+                    start_date.setMonth(start_date.getMonth() + 1);
+                    end_date = format.parse(dataSnapshot.child("end_date").getValue().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                CouchPost couch = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
+                couch.setPostId(postId);
+                adapter.addToAdapter(couch);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d("tag","On Child Changed");
-                // TODO get author name
-                author = "";
+                Log.d("tag", "On Child Added, " + couches.size());
+
                 authorUid = dataSnapshot.child("authorUid").getValue().toString();
+                author = users.get(authorUid).getFullName();
                 description = dataSnapshot.child("description").getValue().toString();
                 booker = dataSnapshot.child("booker").getValue().toString();
-                pictures = dataSnapshot.child("pictures").getValue().toString();
+                pictures = dataSnapshot.child("picture").getValue().toString();
                 latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
                 longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                 postId = dataSnapshot.getKey();
                 price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
-                String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
-                start_date = new Date();
-                end_date = new Date();
-                accepted = false;
+                accepted = Boolean.parseBoolean(dataSnapshot.child("accepted").getValue().toString());
 
-                Log.d("tag", couches.toString());
+                // Format Dates
+                // TODO may cause issues with new start_date string
+                DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+                try {
+                    start_date = format.parse(dataSnapshot.child("start_date").getValue().toString());
+                    end_date = format.parse(dataSnapshot.child("end_date").getValue().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
-                adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted));
+                CouchPost couch = findCouchPost(postId);
+
+                if(couch != null){
+                    couch.setPrice(price);
+                    couch.setAccepted(accepted);
+                    couch.setDescription(description);
+                    couch.setLatitude(latitude);
+                    couch.setLongitude(longitude);
+                    couch.setStart_date(start_date);
+                    couch.setEnd_date(end_date);
+                }
+                else{
+                    couch = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
+                    couch.setPostId(postId);
+                    adapter.addToAdapter(couch);
+                }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                // TODO remove from list
+                // Remove from list
+                removeCouchPost(dataSnapshot.getKey());
             }
 
             @Override
@@ -170,57 +204,50 @@ public class ListViewFragment extends Fragment {
 
         // USERS
         db.child("users").addChildEventListener(new ChildEventListener() {
-            String uid, username, fullname, phoneno, city, state;
+            String uid, city, fullname, phoneno, state, username;
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d("tag", "On Child Added, " + couches.size());
-                // TODO get author name
-                author = "";
-                authorUid = dataSnapshot.child("authorUid").getValue().toString();
-                description = dataSnapshot.child("description").getValue().toString();
-                booker = dataSnapshot.child("booker").getValue().toString();
-                pictures = dataSnapshot.child("pictures").getValue().toString();
-                latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
-                longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
-                postId = dataSnapshot.getKey();
-                price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
-                accepted = Boolean.parseBoolean(dataSnapshot.child("accepted").getValue().toString());
+                // Populate Users list
+                uid = dataSnapshot.getKey();
+                city = dataSnapshot.child("city").getValue().toString();
+                fullname = dataSnapshot.child("fullName").getValue().toString();
+                phoneno = dataSnapshot.child("phoneNo").getValue().toString();
+                state = dataSnapshot.child("state").getValue().toString();
+                username = dataSnapshot.child("username").getValue().toString();
 
-                //TODO parse dates or just pull a string from DB
-                start_date = new Date(2018,9,5);
-                end_date = start_date;
-
-                adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, uri.toString(), booker, accepted));
+                User user = new User(uid,username,fullname,phoneno,city,state);
+                users.put(uid,user);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d("tag","On Child Changed");
-                // TODO get author name
-                author = "";
-                authorUid = dataSnapshot.child("authorUid").getValue().toString();
-                description = dataSnapshot.child("description").getValue().toString();
-                booker = dataSnapshot.child("booker").getValue().toString();
-                pictures = dataSnapshot.child("pictures").getValue().toString();
-                latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
-                longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
-                postId = dataSnapshot.getKey();
-                price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
-                String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
-                start_date = new Date();
-                end_date = new Date();
-                accepted = false;
+                // Change the User
+                User user = users.get(dataSnapshot.getKey());
+                uid = dataSnapshot.getKey();
+                city = dataSnapshot.child("city").getValue().toString();
+                fullname = dataSnapshot.child("fullName").getValue().toString();
+                phoneno = dataSnapshot.child("phoneNo").getValue().toString();
+                state = dataSnapshot.child("state").getValue().toString();
+                username = dataSnapshot.child("username").getValue().toString();
 
-                Log.d("tag", couches.toString());
+                if(user != null){
+                    user.setCity(city);
+                    user.setFullName(fullname);
+                    user.setState(state);
+                    user.setUsername(username);
+                    user.setPhoneNo(phoneno);
+                }
+                else{
+                    users.put(uid,user);
+                }
 
-                adapter.addToAdapter(new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted));
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                // TODO remove from list
+                // Remove the User
+                users.remove(dataSnapshot.getKey());
             }
 
             @Override
@@ -239,20 +266,21 @@ public class ListViewFragment extends Fragment {
         filtered_couches = new ArrayList<>();
 
         for(int i = 0; i < couches.size(); ++i){
-            // Filter Distance
-            float[] distance = new float[5];
+            // Filter Distance, find distance between the couch location and UCSB latlng
+            // TODO change to phone location
+            float[] distance = new float[1];
             Location.distanceBetween(couches.get(i).getLatitude(), couches.get(i).getLongitude(), 34.412936, -119.847863, distance);
             double metersToMiles = 1609.34;
-
-            // If distance is farther than fDistance, go to next item in couches
+            // If distance is farther than distance from UCSB, go to next item in couches
             if(distance[0]*metersToMiles > main.fDistance)
             {
-                break;
+                continue;
             }
             // Filter Price
+            Log.d("tag", "Couch Price: " + couches.get(i).getPrice() + " and Max Price: " + main.fPriceMax);
             if(couches.get(i).getPrice() > main.fPriceMax || couches.get(i).getPrice() < main.fPriceMin)
             {
-                break;
+                continue;
             }
             // Filter Date, must not be null AND be the same date
             if(main.fDate != null &&
@@ -260,12 +288,38 @@ public class ListViewFragment extends Fragment {
                 couches.get(i).getStart_date().getMonth() != main.fDate.getMonth() ||
                 couches.get(i).getStart_date().getYear() != main.fDate.getYear()))
             {
-                break;
+                continue;
             }
 
             filtered_couches.add(couches.get(i));
         }
-
         adapter.changeDataset(filtered_couches);
+    }
+
+    public CouchPost findCouchPost(String postId){
+        for(int i = 0; i < couches.size(); ++i){
+            if(couches.get(i).getPostId() == postId){
+                return couches.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void removeCouchPost(String postId){
+        for(int i = 0; i < couches.size(); ++i){
+            if(couches.get(i).getPostId() == postId){
+                couches.remove(i);
+                return;
+            }
+        }
+    }
+
+    public User findUser(String userId){
+        for(int i = 0; i < users.size(); ++i){
+            if(users.get(i).getUid() == userId){
+                return users.get(i);
+            }
+        }
+        return null;
     }
 }

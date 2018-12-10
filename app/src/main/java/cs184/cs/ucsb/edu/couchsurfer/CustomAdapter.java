@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import com.squareup.picasso.Picasso;
@@ -35,7 +37,6 @@ public class CustomAdapter extends ArrayAdapter<CouchPost>{
 
     public CustomAdapter(ArrayList<CouchPost> data, Context context) {
         super(context, R.layout.row_item, data);
-        Log.d("tag", "custom adapter constructor");
         this.dataSet = data;
         this.mContext=context;
     }
@@ -73,8 +74,8 @@ public class CustomAdapter extends ArrayAdapter<CouchPost>{
         lastPosition = position;
 
         viewHolder.description.setText(couch.getDescription());
-        viewHolder.price.setText( ((Double)couch.getPrice()).toString());
-        Log.d("tag", "set price text: " + viewHolder.price);
+        String formattedPrice = BigDecimal.valueOf(couch.getPrice()).setScale(2, RoundingMode.HALF_UP).toString();
+        viewHolder.price.setText(formattedPrice);
         viewHolder.picture.setTag(position);
         Picasso.with(mContext)
                 .load(couch.getPictures()).resize(500, 500)
@@ -86,11 +87,12 @@ public class CustomAdapter extends ArrayAdapter<CouchPost>{
 
     public void addToAdapter(CouchPost couch){
         dataSet.add(couch);
-        notifyDataSetChanged();
+        this.notifyDataSetChanged();
     }
 
     public void changeDataset(ArrayList<CouchPost> couches){
-        this.dataSet = couches;
-        notifyDataSetChanged();
+        dataSet.clear();
+        dataSet.addAll(couches);
+        this.notifyDataSetChanged();
     }
 }

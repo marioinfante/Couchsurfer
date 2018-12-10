@@ -1,6 +1,5 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -8,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -31,11 +29,9 @@ public class ViewPostDialogFragment extends DialogFragment {
         args.putDouble("price", couch.getPrice());
         args.putString("author", couch.getAuthor());
         args.putString("description", couch.getDescription());
-
-        StringBuilder sb = new StringBuilder();
-        // MM / DD / YY
-        sb.append(couch.getStart_date().getMonth() + "/" + couch.getStart_date().getDay() + "/" + couch.getStart_date().getYear());
-        args.putString("date", sb.toString());
+        // TODO confirm that getStart_date() returns a string
+        //args.putString("date", couch.getStart_date());
+        args.putString("date", "11/11/11");
 
         frag.setArguments(args);
         return frag;
@@ -77,10 +73,8 @@ public class ViewPostDialogFragment extends DialogFragment {
         text = "Available Date: " + date;
         date_tv.setText(text);
 
-        /* TODO UNCOMMENT WHEN URI IS VALID
         Picasso.with(getContext())
                 .load(picture_url).resize(500, 500)
                 .into(imageview);
-        */
     }
 }
