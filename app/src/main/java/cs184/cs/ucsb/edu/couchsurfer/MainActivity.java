@@ -42,16 +42,26 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public ArrayList<CouchPost> couches;
     public static ArrayList<CouchPost> requestedCouches;
+
     public ListView listview;
     public ListViewFragment listViewFragment;
     public MapViewFragment mapViewFragment;
+    public FilterFragment filterFragment;
     public ProfileFragment profileFragment;
     public RequestsFragment requestsFragment;
     public static CustomAdapter adapter;
 
+    // Filter Variables, default values (cuz i dont want to error check)
+    public Date fDate;
+    public double fPriceMin = 0;
+    public double fPriceMax = 999999;
+    public double fDistance = 999999;
+
+
     Toolbar toolbar;
     DrawerLayout mDrawer;
     NavigationView nvDrawer;
+    CouchsurferDatabase couchsurferDatabase;
     ActionBarDrawerToggle drawerToggle;
 
     View headerLayout;
@@ -72,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        couchsurferDatabase = new CouchsurferDatabase();
 
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
@@ -100,9 +112,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mapViewFragment = new MapViewFragment();
         listViewFragment = new ListViewFragment();
+        filterFragment = new FilterFragment();
         profileFragment = new ProfileFragment();
         requestsFragment = new RequestsFragment();
-        startListViewFragment();
+
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference().child("users");
@@ -113,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setRequestedPostIds();
 
+        // Start the listview
+        ft.add(R.id.flContent, listViewFragment);
+        ft.commit();
     }
 
     @Override
@@ -137,17 +153,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);
                 return true;
+            case R.id.filter_button:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, filterFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -204,29 +219,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void startListViewFragment(){
-        // Populate Data
-        String author = "Mathew Matt";
-        String uid = "mattymatt";
-        String description = "This is a luxury couch fit for a king";
-        double longitude = -119.854267;
-        double latitude = 34.411697;
-        double price = 20.20;
-        Date date = new Date();
-        date.setDate(9);
-        date.setMonth(10);
-        date.setYear(2018);
-
-        Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/" + R.drawable.sample_7);
-        Boolean accepted = false;
-        String booker = "Lindsey";
-
-        couches = new ArrayList<>();
-
-        couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
-
-        // Start the listview
-        ft.add(R.id.flContent, listViewFragment);
+    public void defaultFragment(){
+        ft = fm.beginTransaction();
+        ft.replace(R.id.flContent, listViewFragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -254,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
     }
+
     public void setRequestedPostIds() {
         reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -299,6 +296,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-
-
 }

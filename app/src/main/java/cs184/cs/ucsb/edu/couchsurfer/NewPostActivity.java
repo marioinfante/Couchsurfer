@@ -25,18 +25,24 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 
 public class NewPostActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int SELECT_FILE = 20;
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
+    private int currYear, currMonth, currDay;
     private int year, month, day;
+    private LatLng latlng;
 
     private Button dateButton, postButton, locationButton;
     private FloatingActionButton photoButton;
@@ -46,6 +52,7 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
 
     private Uri imageUri;
     private DatePickerDialogListener dateListener;
+    CouchsurferDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +62,15 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
         final Calendar c = Calendar.getInstance();
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
-        day = c.get(Calendar.DAY_OF_MONTH);
+        day = c.get(Calendar.DAY_OF_MONTH - 1);
+
+        currYear = year;
+        currMonth = month;
+        currDay = day;
 
         dateListener = new DatePickerDialogListener();
+        latlng = new LatLng(0, 0);
+        db = new CouchsurferDatabase();
 
         dateButton = findViewById(R.id.dateButton);
         postButton = findViewById(R.id.postButton);
@@ -74,8 +87,6 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
         postButton.setOnClickListener(this);
         photoButton.setOnClickListener(this);
         locationButton.setOnClickListener(this);
-
-
     }
 
     public void setDay(int day) { this.day = day; }
@@ -103,6 +114,51 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
                 chooseImage();
                 break;
             case R.id.postButton:
+                try{
+                    Double.parseDouble(priceEditText.getText().toString());
+                }catch(NumberFormatException ex){
+                    Toast.makeText(getApplicationContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                if(currYear > year){
+                    Toast.makeText(getApplicationContext(), "Please choose a date in the future 1", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                else if(currYear <= year){
+                    if(currMonth > month){
+                        Toast.makeText(getApplicationContext(), "Please choose a date in the future 2", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    else{
+                        if(currDay >= day){
+                            Toast.makeText(getApplicationContext(), "Please choose a date in the future 3", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+                }
+
+                if(descriptionEditText.getText().toString().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please add a description", Toast.LENGTH_SHORT).show();
+                }
+                else if(latlng.latitude == 0 || latlng.longitude == 0) {
+                    Toast.makeText(getApplicationContext(), "Please choose a location", Toast.LENGTH_SHORT).show();
+                }
+                else if(imageUri == null) {
+                    Toast.makeText(getApplicationContext(), "Please add an image", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    DefaultPostFactory pf = new DefaultPostFactory();
+                    String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    String description = descriptionEditText.getText().toString();
+                    Double price = Double.parseDouble(priceEditText.getText().toString());
+                    String start = (month + 1) + "/" + day + "/" + year;
+                    String end = (month + 1) + "/" + (day + 1) + "/" + year;
+                    CouchPost couch = pf.createPost(name, userId, description, latlng.longitude, latlng.latitude, price, start, end, imageUri);
+                    db.addPost(couch);
+                    finish();
+                }
                 break;
         }
     }
@@ -179,6 +235,7 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 locationTextView.setText(place.getName());
+                latlng = place.getLatLng();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.
