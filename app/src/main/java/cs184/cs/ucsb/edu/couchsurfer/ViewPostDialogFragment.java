@@ -1,13 +1,16 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
+import android.hardware.camera2.TotalCaptureResult;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -15,6 +18,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class ViewPostDialogFragment extends DialogFragment {
+
+    Button requestButton;
 
     public ViewPostDialogFragment() {
         // Empty constructor is required for DialogFragment
@@ -56,6 +61,7 @@ public class ViewPostDialogFragment extends DialogFragment {
         TextView author_tv = view.findViewById(R.id.author_dialog);
         TextView description_tv = view.findViewById(R.id.description_dialog);
         ImageView imageview = view.findViewById(R.id.picture_dialog);
+        Button requestButton = view.findViewById(R.id.requestButton);
 
         String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
 
@@ -74,5 +80,13 @@ public class ViewPostDialogFragment extends DialogFragment {
         Picasso.with(getContext())
                 .load(picture_url).resize(500, 500)
                 .into(imageview);
+
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // implement backend stuff later
+                Toast.makeText(getContext(), "The owner has been sent a request to book", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

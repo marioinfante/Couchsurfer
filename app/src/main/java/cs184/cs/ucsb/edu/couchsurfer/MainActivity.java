@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,6 +41,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static ArrayList<CouchPost> requestedCouches;
@@ -260,21 +265,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     postRef.child(child.getValue().toString()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            final String author = currentUser.getDisplayName().toString();
+                            final String authoruid = dataSnapshot.child("authorUid").getValue().toString();
+                            final String description = dataSnapshot.child("description").getValue().toString();
+                            final double longitude = Double.valueOf(dataSnapshot.child("longitude").getValue().toString());
+                            final double latitude = Double.valueOf(dataSnapshot.child("latitude").getValue().toString());
+                            final double price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
+                            final String start_date = dataSnapshot.child("start_date").getValue().toString();
+                            final String end_date = dataSnapshot.child("end_date").getValue().toString();
+                            final String picture = dataSnapshot.child("picture").getValue().toString();
+                            final String booker = dataSnapshot.child("booker").getValue().toString();
+                            final boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
 
-                            String author = currentUser.getDisplayName().toString();
-                            String authoruid = dataSnapshot.child("authorUid").getValue().toString();
-                            String description = dataSnapshot.child("description").getValue().toString();
-                            double longitude = Double.valueOf(dataSnapshot.child("longitude").getValue().toString());
-                            double latitude = Double.valueOf(dataSnapshot.child("latitude").getValue().toString());
-                            double price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
-                            String pictures = dataSnapshot.child("pictures").getValue().toString();
-                            Uri uri = Uri.parse(pictures);
-                            String booker = dataSnapshot.child("booker").getValue().toString();
-                            boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
-                            String start_date = dataSnapshot.child("start_date").getValue().toString();
-                            String end_date = dataSnapshot.child("end_date").getValue().toString();
-                            CouchPost post = new CouchPost(author, authoruid, description, longitude, latitude, price, start_date, end_date, uri, booker, accepted);
-                            requestedCouches.add(post);
+                            StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(picture);
+                            httpsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    CouchPost post = new CouchPost(author, authoruid, description, longitude, latitude, price, start_date, end_date, uri, booker, accepted);
+                                    requestedCouches.add(post);
+                                }
+                            });
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {

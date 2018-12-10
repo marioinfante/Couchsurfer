@@ -149,7 +149,11 @@ public class NewPostActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 else{
                     DefaultPostFactory pf = new DefaultPostFactory();
-                    String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                    String name = "Default";
+
+                    // buggy
+                    //String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
                     String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     String description = descriptionEditText.getText().toString();
                     Double price = Double.parseDouble(priceEditText.getText().toString());
