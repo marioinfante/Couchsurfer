@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
 
     public CustomAdapter(ArrayList<CouchPost> data, Context context) {
         super(context, R.layout.row_item, data);
+        Log.d("tag", "custom adapter constructor");
         this.dataSet = data;
         this.mContext=context;
     }
@@ -87,6 +89,7 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
 
         viewHolder.description.setText(couch.getDescription());
         viewHolder.price.setText( ((Double)couch.getPrice()).toString());
+        Log.d("tag", "set price text: " + viewHolder.price);
         viewHolder.picture.setTag(position);
         Picasso.with(mContext)
                 .load(couch.getPictures()).resize(500, 500)
@@ -94,5 +97,15 @@ public class CustomAdapter extends ArrayAdapter<CouchPost> implements View.OnCli
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    public void addToAdapter(CouchPost couch){
+        dataSet.add(couch);
+        notifyDataSetChanged();
+    }
+
+    public void changeDataset(ArrayList<CouchPost> couches){
+        this.dataSet = couches;
+        notifyDataSetChanged();
     }
 }
