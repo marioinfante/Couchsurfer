@@ -263,9 +263,9 @@ public class MyListingsFragment extends Fragment {
         filtered_couches = new ArrayList<>();
 
         for(int i = 0; i < couches.size(); ++i){
-            // TODO Check couches for names and match them up with THIS user
-
-            filtered_couches.add(couches.get(i));
+            if(couches.get(i).getAuthor().equals(main.currentUser.getDisplayName())){
+                filtered_couches.add(couches.get(i));
+            }
         }
         adapter.changeDataset(filtered_couches);
     }
