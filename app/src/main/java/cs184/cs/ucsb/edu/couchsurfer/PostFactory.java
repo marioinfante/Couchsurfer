@@ -1,15 +1,13 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
-import java.util.Date;
+import android.net.Uri;
 
-/**
- * Created by kailash on 2/4/18.
- */
+import java.util.Date;
 
 public interface PostFactory {
     public CouchPost createPost(String author, String authorUid, String description, double longitude, double latitude, double price,
-                                Date start_date, Date end_date, String pictures);
+                                String start_date, String end_date, Uri pictures);
 
     public CouchPost createPost(String author, String authorUid, String description, double longitude, double latitude, double price,
-                                Date start_date, Date end_date, String pictures, String booker, Boolean accepted);
+                                String start_date, String end_date, Uri pictures, String booker, Boolean accepted);
 }

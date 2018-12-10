@@ -78,7 +78,7 @@ public class CustomAdapter extends ArrayAdapter<CouchPost>{
         viewHolder.price.setText(formattedPrice);
         viewHolder.picture.setTag(position);
         Picasso.with(mContext)
-                .load(couch.getPictures()).resize(500, 500)
+                .load(couch.getPicture()).resize(500, 500)
                 .into(viewHolder.picture);
 
         // Return the completed view to render on screen
