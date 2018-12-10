@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,6 +41,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static java.security.AccessController.getContext;
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public double fPriceMax = 999999;
     public double fDistance = 999999;
 
+    public static HashMap<String, Marker> markerMap;
+    public static HashMap<Marker, String> idMap;
 
     Toolbar toolbar;
     DrawerLayout mDrawer;
@@ -92,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
+
+        markerMap = new HashMap<>();
+        idMap = new HashMap<>();
 
         // Attaching the layout to the toolbar object
         toolbar = findViewById(R.id.tool_bar);

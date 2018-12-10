@@ -36,8 +36,6 @@ import java.util.HashMap;
 public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
 
-    public HashMap<String, Marker> markerMap;
-    public HashMap<Marker, String> idMap;
     public MainActivity main;
     DatabaseReference db;
 
@@ -55,9 +53,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        markerMap = new HashMap<>();
-        idMap = new HashMap<>();
     }
 
     @Override
@@ -93,8 +88,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(1));
                 }
                 Marker m = mMap.addMarker(markerOptions);
-                markerMap.put(postId, m);
-                idMap.put(m, postId);
+                main.markerMap.put(postId, m);
+                main.idMap.put(m, postId);
 
                 filterMarkers();
             }
@@ -106,8 +101,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 Double price = Double.parseDouble(priceString);
                 String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
 
-                Marker marker = markerMap.get(postId);
-                idMap.remove(marker);
+                Marker marker = main.markerMap.get(postId);
+                main.idMap.remove(marker);
                 marker.setTitle("$" + formattedPrice);
 
                 if (price <= 20) {
@@ -123,9 +118,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 }else {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(1));
                 }
-                markerMap.remove(postId);
-                markerMap.put(postId, marker);
-                idMap.put(marker, postId);
+                main.markerMap.remove(postId);
+                main.markerMap.put(postId, marker);
+                main.idMap.put(marker, postId);
 
                 filterMarkers();
             }
@@ -133,9 +128,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 String postId = dataSnapshot.getKey();
-                Marker currMarker = markerMap.get(postId);
-                markerMap.remove(postId);
-                idMap.remove(currMarker);
+                Marker currMarker = main.markerMap.get(postId);
+                main.markerMap.remove(postId);
+                main.idMap.remove(currMarker);
                 currMarker.remove();
 
                 filterMarkers();
@@ -158,7 +153,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     public boolean onMarkerClick(Marker marker) {
         final Marker m = marker;
 
-        DatabaseReference query = FirebaseDatabase.getInstance().getReference().child("posts").child(idMap.get(marker));
+        DatabaseReference query = FirebaseDatabase.getInstance().getReference().child("posts").child(main.idMap.get(marker));
         query.keepSynced(true);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
@@ -20,6 +22,7 @@ import java.math.RoundingMode;
 public class ViewPostDialogFragment extends DialogFragment {
 
     Button requestButton;
+    MainActivity main;
 
     public ViewPostDialogFragment() {
         // Empty constructor is required for DialogFragment
@@ -35,6 +38,7 @@ public class ViewPostDialogFragment extends DialogFragment {
         args.putString("author", couch.getAuthor());
         args.putString("description", couch.getDescription());
         args.putString("date", couch.getStart_date());
+        args.putString("authorUid", couch.getAuthorUid());
 
         frag.setArguments(args);
         return frag;
@@ -55,6 +59,7 @@ public class ViewPostDialogFragment extends DialogFragment {
         String author = args.getString("author");
         String description = args.getString("description");
         String date = args.getString("date");
+        final String authorUid = args.getString("authorUid");
 
         TextView date_tv = view.findViewById(R.id.dates_dialog);
         TextView price_tv = view.findViewById(R.id.price_dialog);
@@ -62,6 +67,8 @@ public class ViewPostDialogFragment extends DialogFragment {
         TextView description_tv = view.findViewById(R.id.description_dialog);
         ImageView imageview = view.findViewById(R.id.picture_dialog);
         Button requestButton = view.findViewById(R.id.requestButton);
+
+        main = (MainActivity) getActivity();
 
         String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
 
@@ -77,6 +84,10 @@ public class ViewPostDialogFragment extends DialogFragment {
         text = "Available Date: " + date;
         date_tv.setText(text);
 
+        if(authorUid.equals(main.currentUser.getUid())){
+            requestButton.setText("EDIT");
+        }
+
         Picasso.with(getContext())
                 .load(picture_url).resize(500, 500)
                 .into(imageview);
@@ -85,7 +96,11 @@ public class ViewPostDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 // implement backend stuff later
-                Toast.makeText(getContext(), "The owner has been sent a request to book", Toast.LENGTH_LONG).show();
+                if(authorUid.equals(main.currentUser.getUid())) {
+                    Toast.makeText(getContext(), "Cannot edit right now. Try again later.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(getContext(), "The owner has been sent a request to book", Toast.LENGTH_LONG).show();
             }
         });
     }
