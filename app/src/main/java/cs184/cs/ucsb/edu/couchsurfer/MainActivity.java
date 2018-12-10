@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setRequestedPostIds() {
+        requestedCouches.clear();
         reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -278,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             final String picture = dataSnapshot.child("picture").getValue().toString();
                             final String booker = dataSnapshot.child("booker").getValue().toString();
                             final boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
+
 
                             StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(picture);
                             httpsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

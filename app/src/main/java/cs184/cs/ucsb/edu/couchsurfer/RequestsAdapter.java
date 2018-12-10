@@ -110,4 +110,9 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
         // Return the completed view to render on screen
         return convertView;
     }
+
+    public void clearDataSet(){
+        dataSet.clear();
+        //this.notifyDataSetChanged();
+    }
 }
