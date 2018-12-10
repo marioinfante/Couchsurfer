@@ -1,17 +1,14 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,25 +19,25 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
-
-public class MapViewFragment extends Fragment implements OnMapReadyCallback {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
 
-    public HashMap<String, Marker> markers, filteredMarkers;
+    public HashMap<String, Marker> markerMap;
+    public HashMap<Marker, String> idMap;
     public MainActivity main;
     DatabaseReference db;
 
@@ -59,7 +56,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        markers = new HashMap<>();
+        markerMap = new HashMap<>();
+        idMap = new HashMap<>();
     }
 
     @Override
@@ -81,16 +79,22 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
 
                 MarkerOptions markerOptions = new MarkerOptions().position(location).title("$" + formattedPrice);
-                if (price < 20) {
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                } else if (price < 50) {
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                } else if (price < 100) {
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                } else {
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                if (price <= 20) {
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(203));
+                } else if (price <= 40) {
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(121));
+                }else if (price <= 60) {
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(64));
+                } else if (price <= 80) {
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(39));
+                } else if (price <= 100) {
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(25));
+                }else {
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(1));
                 }
-                markers.put(postId, mMap.addMarker(markerOptions));
+                Marker m = mMap.addMarker(markerOptions);
+                markerMap.put(postId, m);
+                idMap.put(m, postId);
 
                 filterMarkers();
             }
@@ -102,18 +106,26 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 Double price = Double.parseDouble(priceString);
                 String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
 
-                Marker marker = markers.get(postId);
+                Marker marker = markerMap.get(postId);
+                idMap.remove(marker);
                 marker.setTitle("$" + formattedPrice);
 
-                if (price < 20) {
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                } else if (price < 50) {
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                } else if (price < 100) {
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                } else {
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                if (price <= 20) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(203));
+                } else if (price <= 40) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(121));
+                }else if (price <= 60) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(64));
+                } else if (price <= 80) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(39));
+                } else if (price <= 100) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(25));
+                }else {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(1));
                 }
+                markerMap.remove(postId);
+                markerMap.put(postId, marker);
+                idMap.put(marker, postId);
 
                 filterMarkers();
             }
@@ -121,8 +133,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 String postId = dataSnapshot.getKey();
-                Marker currMarker = markers.get(postId);
-                markers.remove(postId);
+                Marker currMarker = markerMap.get(postId);
+                markerMap.remove(postId);
+                idMap.remove(currMarker);
                 currMarker.remove();
 
                 filterMarkers();
@@ -138,21 +151,52 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
+        mMap.setOnMarkerClickListener(this);
+    }
 
-        /*for(int i = 0; i < main.couches.size(); ++i){
-            LatLng latLng = new LatLng(main.couches.get(i).getLatitude(),main.couches.get(i).getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(main.couches.get(i).getAuthor()));
-        }*/
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        final Marker m = marker;
 
+        DatabaseReference query = FirebaseDatabase.getInstance().getReference().child("posts").child(idMap.get(marker));
+        query.keepSynced(true);
 
-        // When a marker is clicked, show dialog
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                Toast.makeText(getContext(), marker.getTitle() ,Toast.LENGTH_SHORT).show();
-                return true;
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //initialize a new couch
+                final String postId = dataSnapshot.getKey();
+                final String author = dataSnapshot.child("author").getValue().toString();
+                final String authorUid = dataSnapshot.child("authorUid").getValue().toString();
+                final String description = dataSnapshot.child("description").getValue().toString();
+                final Double longitude = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                final Double latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
+                final Double price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
+                final String start_date = dataSnapshot.child("start_date").getValue().toString();
+                final String end_date = dataSnapshot.child("end_date").getValue().toString();
+                final String booker = dataSnapshot.child("booker").getValue().toString();
+                final Boolean accepted = Boolean.parseBoolean(dataSnapshot.child("accepted").getValue().toString());
+                String imageLocation = dataSnapshot.child("picture").getValue().toString();
+
+                StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageLocation);
+                httpsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        CouchPost cp = new CouchPost(author, authorUid, description, longitude, latitude, price, start_date, end_date, uri, booker, accepted);
+                        cp.setPostId(postId);
+                        FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                        ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(cp);
+                        viewPostDialogFragment.show(fm, "dialog_fragment");
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
+        return false;
     }
 
     public void refreshData(){
