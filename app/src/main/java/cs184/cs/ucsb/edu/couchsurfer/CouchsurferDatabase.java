@@ -30,24 +30,24 @@ public class CouchsurferDatabase {
     private DatabaseReference usersRef;
     private PostFactory factory;
 
+    private HashMap<String,String> currentMap;
+    private CouchPost currentPost;
+
     public CouchsurferDatabase() {
         rootRef = FirebaseDatabase.getInstance().getReference();
         postsRef = rootRef.child("posts");
         usersRef = rootRef.child("users");
         factory = new DefaultPostFactory();
+        currentMap = new HashMap<>();
     }
 
     // For this method it is important to note that one must take the return value and save it
     // over the post object passed in because this method updates the postId of that post
 
     public CouchPost addPost(CouchPost post) {
-        HashMap<String, String> postMap = makePostMap(post);
-        String postId = postsRef.push().getKey();
-        post.setPostId(postId);
-        DatabaseReference currentChild = postsRef.child(postId);
-        currentChild.setValue(postMap);
+        currentMap = makePostMap(post);
+        currentPost = post;
 
-        final CouchPost cpost = post;
         Uri image = post.getPicture();
         final String imageFileName = image.getLastPathSegment() + ".jpg";
         StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("couchpics/" + imageFileName);
@@ -56,11 +56,11 @@ public class CouchsurferDatabase {
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            savePostInformation(imageFileName, cpost.getPostId());
+                            currentPost.setPostId(savePostInformation(imageFileName));
                         }
                     });
         }
-        return post;
+        return currentPost;
     }
 
     public User addUser(User user){
@@ -146,43 +146,23 @@ public class CouchsurferDatabase {
         return userMap;
     }
 
-    private void savePostInformation(final String imageFileName, final String postId) {
+    private String savePostInformation(final String imageFileName) {
+        final String postId = postsRef.push().getKey();
         if (imageFileName != null) {
             FirebaseStorage.getInstance().getReference().child("couchpics/" + imageFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
                     if (imageFileName != null) {
-                        postsRef.child(postId).child("picture").setValue(uri.toString())
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.wtf("MSG: ", "SUCCESSFULLY ADDED TO DATABASE");
-                                    }
-                                });
+                        currentMap.put("picture", uri.toString());
+                        postsRef.child(postId).setValue(currentMap);
                     }
                 }
             });
         }
         else {
-            Log.wtf("ERROR: ", "profileImageUrl is null");
+            Log.d("ERROR: ", "profileImageUrl is null");
         }
-
-        /*
-        Map<String, Object> userUpdates = new HashMap<>();
-        userUpdates.put("profilePicUrl", profileImageUrl);
-        if (profileImgFileName != null) {
-            dbRef.child(currentUser.getUid()).updateChildren(userUpdates)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.wtf("MSG: ", "SUCCESSFULLY ADDED TO DATABASE");
-                        }
-                    });
-        }
-        else {
-            Log.wtf("ERROR: ", "profileImageUrl is null");
-        }
-        */
+        return postId;
     }
 
     public DatabaseReference getRoot() { return rootRef; }
