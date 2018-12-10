@@ -21,7 +21,10 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     Button fSaveButton, fDateButton;
     EditText fPriceMin, fPriceMax, fDistance;
     TextView fDate;
-    int month,day,year;
+    int today_month, today_day, today_year;
+    int month = 0;
+    int day = 0;
+    int year = 0;
     private DatePickerDialogListener dateListener;
 
 
@@ -41,9 +44,9 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         fDate = view.findViewById(R.id.filter_datetv);
 
         final Calendar c = Calendar.getInstance();
-        year = c.get(Calendar.YEAR);
-        month = c.get(Calendar.MONTH);
-        day = c.get(Calendar.DAY_OF_MONTH);
+        today_year = c.get(Calendar.YEAR);
+        today_month = c.get(Calendar.MONTH);
+        today_day = c.get(Calendar.DAY_OF_MONTH);
 
         dateListener = new DatePickerDialogListener();
 
@@ -58,7 +61,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
 
             case R.id.filter_datebutton:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateListener,
-                        FilterFragment.this.year, FilterFragment.this.month, FilterFragment.this.day);
+                        FilterFragment.this.today_year, FilterFragment.this.today_month, FilterFragment.this.today_day);
                 datePickerDialog.show();
                 break;
 

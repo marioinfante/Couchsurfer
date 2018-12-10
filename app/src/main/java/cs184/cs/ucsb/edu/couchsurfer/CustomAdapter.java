@@ -74,7 +74,7 @@ public class CustomAdapter extends ArrayAdapter<CouchPost>{
         lastPosition = position;
 
         viewHolder.description.setText(couch.getDescription());
-        String formattedPrice = BigDecimal.valueOf(couch.getPrice()).setScale(2, RoundingMode.HALF_UP).toString();
+        String formattedPrice = "$" + BigDecimal.valueOf(couch.getPrice()).setScale(2, RoundingMode.HALF_UP).toString();
         viewHolder.price.setText(formattedPrice);
         viewHolder.picture.setTag(position);
         Picasso.with(mContext)
