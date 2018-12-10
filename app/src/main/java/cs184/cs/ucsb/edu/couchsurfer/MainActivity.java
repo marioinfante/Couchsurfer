@@ -32,15 +32,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public ArrayList<CouchPost> couches;
+    public static ArrayList<CouchPost> requestedCouches;
+
     public ListView listview;
     public ListViewFragment listViewFragment;
     public MapViewFragment mapViewFragment;
     public FilterFragment filterFragment;
     public ProfileFragment profileFragment;
+    public RequestsFragment requestsFragment;
     public static CustomAdapter adapter;
 
     // Filter Variables, default values (cuz i dont want to error check)
@@ -62,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     FirebaseUser currentUser;
     private DatabaseReference dbRef;
+    private DatabaseReference reqRef;
+    private DatabaseReference postRef;
+    private CouchsurferDatabase db = new CouchsurferDatabase();
 
     FragmentManager fm;
     FragmentTransaction ft;
@@ -95,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         headerProfilePic = headerLayout.findViewById(R.id.profilePicIV);
         headerName = headerLayout.findViewById(R.id.nameTV);
         setHeaderInfo();
-      
+
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
 
@@ -103,6 +114,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listViewFragment = new ListViewFragment();
         filterFragment = new FilterFragment();
         profileFragment = new ProfileFragment();
+        requestsFragment = new RequestsFragment();
+
+
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
+        reqRef = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid()).child("requests");
+        postRef = FirebaseDatabase.getInstance().getReference().child("posts");
+
+        requestedCouches = new ArrayList<CouchPost>();
+
+        setRequestedPostIds();
 
         // Start the listview
         ft.add(R.id.flContent, listViewFragment);
@@ -151,12 +173,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         switch (item.getItemId()) {
-            case R.id.nav_profile_fragment:
-                ft = fm.beginTransaction();
-                ft.replace(R.id.flContent, profileFragment);
-                ft.addToBackStack(null);
-                ft.commit();
-                break;
             case R.id.nav_search_fragment:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.flContent, listViewFragment);
@@ -169,15 +185,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
+            case R.id.nav_profile_fragment:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, profileFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
             case R.id.nav_myListings_fragment:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.flContent, listViewFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
+            case R.id.nav_myRequests_fragment:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.flContent, requestsFragment);
+                ft.addToBackStack(null);
+                ft.commit();
             default:
                 ft = fm.beginTransaction();
-                ft.replace(R.id.flContent, listViewFragment);
+                ft.replace(R.id.flContent, requestsFragment);
                 ft.addToBackStack(null);
                 ft.commit();
         }
@@ -200,9 +227,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setHeaderInfo() {
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
-
         if (currentUser != null) {
             Query query =  dbRef.child(currentUser.getUid());
             query.addValueEventListener(new ValueEventListener() {
@@ -225,5 +249,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         }
+    }
+
+    public void setRequestedPostIds() {
+        reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    postRef.child(child.getValue().toString()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            String author = currentUser.getDisplayName().toString();
+                            String authoruid = dataSnapshot.child("authorUid").getValue().toString();
+                            String description = dataSnapshot.child("description").getValue().toString();
+                            double longitude = Double.valueOf(dataSnapshot.child("longitude").getValue().toString());
+                            double latitude = Double.valueOf(dataSnapshot.child("latitude").getValue().toString());
+                            double price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
+                            Date start_date;
+                            Date end_date;
+                            String pictures = dataSnapshot.child("pictures").getValue().toString();
+                            String booker = dataSnapshot.child("booker").getValue().toString();
+                            boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
+
+                            try {
+                                DateFormat format = new SimpleDateFormat("EEE MMM dd", Locale.ENGLISH);
+                                start_date = format.parse(dataSnapshot.child("start_date").getValue().toString());
+                                end_date = format.parse(dataSnapshot.child("end_date").getValue().toString());
+                                CouchPost post = new CouchPost(author, authoruid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
+                                requestedCouches.add(post);
+                            } catch (ParseException e) {
+                                Log.wtf("EXCEPTION", e);
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            System.out.println("The read failed: " + databaseError.getCode());
+                        }
+                    });
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
     }
 }

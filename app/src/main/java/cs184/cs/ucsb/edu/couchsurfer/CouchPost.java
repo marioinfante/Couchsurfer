@@ -20,6 +20,8 @@ public class CouchPost implements Post {
     private String booker;
     private Boolean accepted;
 
+    public CouchPost() { }
+
     public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, String start_date, String end_date, Uri picture, String booker, Boolean accepted) {
         this.author = author;
         this.authorUid = authorUid;
