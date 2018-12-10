@@ -64,7 +64,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
             case R.id.filter_savebutton:
                 //Filter Minimum Price
                 if(!fPriceMin.getText().toString().isEmpty()){
-                    Log.d("tag","change pricemin, " + fPriceMin.getText().toString());
+                    Log.d("tag","Changing main.fPriceMin to " + fPriceMin.getText().toString());
                     main.fPriceMin = Double.parseDouble(fPriceMin.getText().toString());
                 }
                 else{
@@ -74,7 +74,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
 
                 // Filter Max Price
                 if(!fPriceMax.getText().toString().isEmpty()){
-                    Log.d("tag","change pricemax, " + fPriceMax.getText().toString());
+                    Log.d("tag","Changing main.fPriceMax to " + fPriceMax.getText().toString());
                     main.fPriceMax = Double.parseDouble(fPriceMax.getText().toString());
                 }
                 else{
@@ -84,7 +84,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
 
                 // Filter Distance
                 if(!fDistance.getText().toString().isEmpty()){
-                    Log.d("tag","change distance, " + fDistance.getText().toString());
+                    Log.d("tag","Changing main.fDistance to " + fDistance.getText().toString());
                     main.fDistance = Double.parseDouble(fDistance.getText().toString());
                 }
                 else{
@@ -94,7 +94,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
 
                 // Filter Date
                 if(day != 0 && month != 0 && year != 0){
-                    Log.d("tag","change date, " + month + "/" + day + "/" + year);
+                    Log.d("tag","Changing main.fDate to " + month + "/" + day + "/" + year);
                     main.fDate = new Date();
                     main.fDate.setMonth(month);
                     main.fDate.setYear(year);

@@ -49,6 +49,10 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         main = (MainActivity) getActivity();
+        users = new HashMap<>();
+        couches = new ArrayList<>();
+        filtered_couches = new ArrayList<>();
+        adapter = new CustomAdapter(couches, getContext());
 
         // Refresh just calls filter function
         final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.pullToRefresh);
@@ -59,10 +63,6 @@ public class ListViewFragment extends Fragment {
                 pullToRefresh.setRefreshing(false);
             }
         });
-
-        users = new HashMap<>();
-        couches = new ArrayList<>();
-        adapter = new CustomAdapter(couches, getContext());
 
         // populates couches and filtered couches
         populateData();
@@ -263,7 +263,8 @@ public class ListViewFragment extends Fragment {
     }
 
     public void filterList(){
-        filtered_couches = new ArrayList<>();
+        // start fresh
+        filtered_couches.clear();
 
         for(int i = 0; i < couches.size(); ++i){
             // Filter Distance, find distance between the couch location and UCSB latlng
@@ -271,23 +272,28 @@ public class ListViewFragment extends Fragment {
             float[] distance = new float[1];
             Location.distanceBetween(couches.get(i).getLatitude(), couches.get(i).getLongitude(), 34.412936, -119.847863, distance);
             double metersToMiles = 1609.34;
-            // If distance is farther than distance from UCSB, go to next item in couches
+
+            // Filter Distance
             if(distance[0]*metersToMiles > main.fDistance)
             {
+                Log.d("tag", "Distance Filter triggered by: " + couches.get(i).getPostId());
                 continue;
             }
+
             // Filter Price
-            Log.d("tag", "Couch Price: " + couches.get(i).getPrice() + " and Max Price: " + main.fPriceMax);
             if(couches.get(i).getPrice() > main.fPriceMax || couches.get(i).getPrice() < main.fPriceMin)
             {
+                Log.d("tag", "Price Filter triggered by: " + couches.get(i).getPostId());
                 continue;
             }
+
             // Filter Date, must not be null AND be the same date
             if(main.fDate != null &&
                 (couches.get(i).getStart_date().getDay() != main.fDate.getDay() ||
                 couches.get(i).getStart_date().getMonth() != main.fDate.getMonth() ||
                 couches.get(i).getStart_date().getYear() != main.fDate.getYear()))
             {
+                Log.d("tag", "Date Filter triggered by: " + couches.get(i).getPostId());
                 continue;
             }
 
