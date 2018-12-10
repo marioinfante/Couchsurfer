@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     postRef.child(child.getValue().toString()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-
+                            currentUser = FirebaseAuth.getInstance().getCurrentUser();
                             String author = currentUser.getDisplayName().toString();
                             String authoruid = dataSnapshot.child("authorUid").getValue().toString();
                             String description = dataSnapshot.child("description").getValue().toString();
