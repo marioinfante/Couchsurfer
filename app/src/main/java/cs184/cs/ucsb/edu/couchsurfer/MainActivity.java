@@ -233,8 +233,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setHeaderInfo() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
         if (currentUser != null) {
-            Query query = dbRef.child(currentUser.getUid());
+            Query query =  dbRef.child(currentUser.getUid());
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -244,11 +246,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
                                 .into(headerProfilePic);
                         headerName.setText(dataSnapshot.getValue(User.class).getFullName());
-                    } else {
+                    }
+                    else {
                         Log.wtf("mytag", "dataSnapshot does not exists");
                     }
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Log.e("[Database Error]", databaseError.getMessage());
