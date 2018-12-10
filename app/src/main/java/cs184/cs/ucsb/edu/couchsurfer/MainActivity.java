@@ -198,18 +198,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         double longitude = -119.854267;
         double latitude = 34.411697;
         double price = 20.20;
-        Date date = new Date();
-        date.setDate(9);
-        date.setMonth(10);
-        date.setYear(2018);
-
+        String startDate = "12/01/18";
+        String endDate = "12/02/18";
         Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/" + R.drawable.sample_7);
         Boolean accepted = false;
         String booker = "Lindsey";
 
         couches = new ArrayList<>();
 
-        couches.add(new CouchPost(author,uid,description,longitude,latitude, price, date,date,uri.toString(),booker,accepted));
+        couches.add(new CouchPost(author,uid,description,longitude,latitude, price,startDate,endDate,uri,booker,accepted));
 
         // Start the listview
         ft.add(R.id.flContent, listViewFragment);
