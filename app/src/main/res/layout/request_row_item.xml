@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/row_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/row_description"
+        android:layout_alignTop="@+id/row_image"
+        android:text="Price" />
+
+    <TextView
+        android:id="@+id/row_description"
+        android:layout_width="267dp"
+        android:layout_height="72dp"
+        android:layout_alignTop="@+id/row_image"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="-1dp"
+        android:layout_toStartOf="@+id/row_image"
+        android:text="Description"
+        android:textColor="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/row_image"
+        android:layout_width="98dp"
+        android:layout_height="98dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="0dp"
+        android:src="@android:drawable/ic_dialog_info" />
+
+    <TextView
+        android:id="@+id/statusTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/row_description"
+        android:text="Status: Pending"
+        android:textSize="18dp"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/cancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/row_description"
+        android:layout_toEndOf="@+id/statusTV"
+        android:text="Cancel" />
+
+
+</RelativeLayout>

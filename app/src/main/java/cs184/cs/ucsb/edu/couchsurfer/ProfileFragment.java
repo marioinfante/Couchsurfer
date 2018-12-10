@@ -55,7 +55,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private TextView fullNameTV, usernameTV, emailTV, phoneNoTV, stateTV, cityTV;
 
     private DatabaseReference dbRef;
-    private FirebaseUser fbUser;
     private StorageReference profileImageRef;
 
     FirebaseUser currentUser;
@@ -241,23 +240,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         else {
                 Log.wtf("ERROR: ", "profileImageUrl is null");
             }
-
-        /*
-        Map<String, Object> userUpdates = new HashMap<>();
-        userUpdates.put("profilePicUrl", profileImageUrl);
-        if (profileImgFileName != null) {
-            dbRef.child(currentUser.getUid()).updateChildren(userUpdates)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.wtf("MSG: ", "SUCCESSFULLY ADDED TO DATABASE");
-                        }
-                    });
-        }
-        else {
-            Log.wtf("ERROR: ", "profileImageUrl is null");
-        }
-        */
     }
 
 
