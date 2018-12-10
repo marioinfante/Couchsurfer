@@ -4,4 +4,10 @@
     <color name="colorPrimaryDark">#0A21A2</color>
     <color name="colorAccent">#E74B80</color>
     <color name="colorAccentLight">#FEE2EB</color>
+    <color name="markerCheapest">#009DFF</color>
+    <color name="markerCheaper">#00FF04</color>
+    <color name="markerCheap">#EEFF00</color>
+    <color name="markerPricey">#FFA600</color>
+    <color name="markerPricier">#FF6A00</color>
+    <color name="markerPriciest">#FF0400</color>
 </resources>

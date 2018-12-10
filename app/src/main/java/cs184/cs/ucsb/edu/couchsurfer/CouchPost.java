@@ -57,6 +57,8 @@ public class CouchPost implements Post {
 
     @Override
     public String getAuthor() {
+        if(author.isEmpty())
+            return "No name";
         return author;
     }
 

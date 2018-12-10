@@ -7,4 +7,5 @@
     <string name="description">DESCRIPTION</string>
     <string name="location">LOCATION</string>
     <string name="post_listing">SUBMIT MY POST</string>
+    <string name="request">REQUEST TO BOOK</string>
 </resources>
