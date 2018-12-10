@@ -1,5 +1,8 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
+import android.net.Uri;
+import android.util.Log;
+
 import java.util.Date;
 
 public class CouchPost implements Post {
@@ -11,15 +14,15 @@ public class CouchPost implements Post {
     private Double longitude;
     private Double latitude;
     private Double price;
-    private Date start_date;
-    private Date end_date;
-    private String pictures;
+    private String start_date;
+    private String end_date;
+    private Uri picture;
     private String booker;
     private Boolean accepted;
 
     public CouchPost() { }
 
-    public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, Date start_date, Date end_date, String pictures, String booker, Boolean accepted) {
+    public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, String start_date, String end_date, Uri picture, String booker, Boolean accepted) {
         this.author = author;
         this.authorUid = authorUid;
         this.description = description;
@@ -28,12 +31,12 @@ public class CouchPost implements Post {
         this.price = price;
         this.start_date = start_date;
         this.end_date = end_date;
-        this.pictures = pictures;
+        this.picture = picture;
         this.booker = booker;
         this.accepted = accepted;
     }
 
-    public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, Date start_date, Date end_date, String pictures) {
+    public CouchPost(String author, String authorUid, String description, double longitude, double latitude, double price, String start_date, String end_date, Uri picture) {
         this.author = author;
         this.authorUid = authorUid;
         this.description = description;
@@ -42,7 +45,7 @@ public class CouchPost implements Post {
         this.price = price;
         this.start_date = start_date;
         this.end_date = end_date;
-        this.pictures = pictures;
+        this.picture = picture;
         this.booker = "none";
         this.accepted = false;
     }
@@ -54,6 +57,8 @@ public class CouchPost implements Post {
 
     @Override
     public String getAuthor() {
+        if(author.isEmpty())
+            return "No name";
         return author;
     }
 
@@ -83,18 +88,37 @@ public class CouchPost implements Post {
     }
 
     @Override
-    public Date getStart_date() {
+    public String getStart_date() {
         return start_date;
     }
 
+    public Integer getStartDateDay() {
+        int firstIndex = start_date.indexOf("/");
+        String subs = start_date.substring(firstIndex + 1, start_date.length() - 1);
+        int secondIndex = subs.indexOf("/");
+        return Integer.parseInt(subs.substring(0, secondIndex - 1));
+    }
+
+    public Integer getStartDateMonth() {
+        int index = start_date.indexOf("/");
+        return Integer.parseInt(start_date.substring(0, index -1));
+    }
+
+    public Integer getStartDateYear() {
+        int firstIndex = start_date.indexOf("/");
+        String subs = start_date.substring(firstIndex + 1, start_date.length() - 1);
+        int secondIndex = subs.indexOf("/");
+        return Integer.parseInt(subs.substring(secondIndex + 1, subs.length() - 1));
+    }
+
     @Override
-    public Date getEnd_date() {
+    public String getEnd_date() {
         return end_date;
     }
 
     @Override
-    public String getPictures() {
-        return pictures;
+    public Uri getPicture() {
+        return picture;
     }
 
     public String getBooker() {
@@ -118,12 +142,12 @@ public class CouchPost implements Post {
     }
 
     @Override
-    public void setStart_date(Date start_date) {
+    public void setStart_date(String start_date) {
         this.start_date = start_date;
     }
 
     @Override
-    public void setEnd_date(Date end_date) {
+    public void setEnd_date(String end_date) {
         this.end_date = end_date;
     }
 

@@ -1,20 +1,27 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CouchsurferDatabase {
@@ -22,26 +29,38 @@ public class CouchsurferDatabase {
     private DatabaseReference postsRef;
     private DatabaseReference usersRef;
     private PostFactory factory;
-    private CouchPost triggerQuery;
+
+    private HashMap<String,String> currentMap;
+    private CouchPost currentPost;
 
     public CouchsurferDatabase() {
         rootRef = FirebaseDatabase.getInstance().getReference();
         postsRef = rootRef.child("posts");
         usersRef = rootRef.child("users");
         factory = new DefaultPostFactory();
-        triggerQuery = factory.createPost("", "", "", 0, 0,0, new Date(), new Date(),"","", false);
+        currentMap = new HashMap<>();
     }
 
     // For this method it is important to note that one must take the return value and save it
     // over the post object passed in because this method updates the postId of that post
 
     public CouchPost addPost(CouchPost post) {
-        HashMap<String, String> postMap = makePostMap(post);
-        String postId = postsRef.push().getKey();
-        post.setPostId(postId);
-        DatabaseReference currentChild = postsRef.child(postId);
-        currentChild.setValue(postMap);
-        return post;
+        currentMap = makePostMap(post);
+        currentPost = post;
+
+        Uri image = post.getPicture();
+        final String imageFileName = image.getLastPathSegment() + ".jpg";
+        StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("couchpics/" + imageFileName);
+        if (image != null) {
+            imageRef.putFile(image)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            currentPost.setPostId(savePostInformation(imageFileName));
+                        }
+                    });
+        }
+        return currentPost;
     }
 
     public User addUser(User user){
@@ -107,9 +126,8 @@ public class CouchsurferDatabase {
         postMap.put("longitude", post.getLongitude().toString());
         postMap.put("latitude", post.getLatitude().toString());
         postMap.put("price", post.getPrice().toString());
-        postMap.put("start_date", post.getStart_date().toString());
-        postMap.put("end_date", post.getEnd_date().toString());
-        postMap.put("pictures", post.getPictures());
+        postMap.put("start_date", post.getStart_date());
+        postMap.put("end_date", post.getEnd_date());
         postMap.put("booker", post.getBooker());
         postMap.put("accepted", "false");
         return postMap;
@@ -126,6 +144,25 @@ public class CouchsurferDatabase {
         userMap.put("state", user.getState());
         userMap.put("rating", Integer.toString(user.getRating()));
         return userMap;
+    }
+
+    private String savePostInformation(final String imageFileName) {
+        final String postId = postsRef.push().getKey();
+        if (imageFileName != null) {
+            FirebaseStorage.getInstance().getReference().child("couchpics/" + imageFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    if (imageFileName != null) {
+                        currentMap.put("picture", uri.toString());
+                        postsRef.child(postId).setValue(currentMap);
+                    }
+                }
+            });
+        }
+        else {
+            Log.d("ERROR: ", "profileImageUrl is null");
+        }
+        return postId;
     }
 
     public DatabaseReference getRoot() { return rootRef; }

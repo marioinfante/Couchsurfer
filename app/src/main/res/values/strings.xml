@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">Couchsurfer</string>
+    <string name="app_name">CouchSurfer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="new_post_title">NEW COUCHSURFER LISTING</string>
+    <string name="new_post_title">NEW COUCHSURFER POST</string>
     <string name="price">PRICE</string>
     <string name="description">DESCRIPTION</string>
     <string name="location">LOCATION</string>
     <string name="post_listing">SUBMIT MY POST</string>
+    <string name="request">REQUEST TO BOOK</string>
 </resources>

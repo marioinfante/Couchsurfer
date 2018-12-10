@@ -8,21 +8,20 @@
 
     <TextView
         android:id="@+id/descriptionTextView"
-        android:layout_width="130dp"
+        android:layout_width="0dp"
         android:layout_height="37dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="68dp"
-        android:capitalize="words"
         android:gravity="center"
         android:text="@string/description"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateButton" />
 
     <Button
         android:id="@+id/dateButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
@@ -32,23 +31,24 @@
 
     <TextView
         android:id="@+id/titleTextView"
-        android:layout_width="352dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="44dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:textColor="@color/colorPrimaryDark"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.388"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/new_post_title" />
 
     <TextView
         android:id="@+id/dateTextView"
-        android:layout_width="191dp"
+        android:layout_width="0dp"
         android:layout_height="43dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="20dp"
@@ -63,21 +63,21 @@
 
     <TextView
         android:id="@+id/priceTextView"
-        android:layout_width="114dp"
+        android:layout_width="0dp"
         android:layout_height="37dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:capitalize="words"
         android:gravity="center"
         android:text="@string/price"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateButton" />
 
     <EditText
         android:id="@+id/priceEditText"
-        android:layout_width="181dp"
+        android:layout_width="0dp"
         android:layout_height="39dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
@@ -101,13 +101,15 @@
 
     <EditText
         android:id="@+id/descriptionEditText"
-        android:layout_width="192dp"
+        android:layout_width="0dp"
         android:layout_height="137dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/descriptionTextView"
         app:layout_constraintTop_toBottomOf="@+id/priceEditText" />
 
@@ -115,20 +117,24 @@
         android:id="@+id/photoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="64dp"
         android:clickable="true"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/postButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationButton"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <ImageView
         android:id="@+id/photoImageView"
-        android:layout_width="191dp"
-        android:layout_height="113dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/postButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/photoButton"
         app:layout_constraintTop_toBottomOf="@+id/locationTextView"
         app:srcCompat="@color/common_google_signin_btn_text_dark_default" />
@@ -147,7 +153,7 @@
 
     <Button
         android:id="@+id/locationButton"
-        android:layout_width="119dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="108dp"
@@ -157,12 +163,14 @@
 
     <TextView
         android:id="@+id/locationTextView"
-        android:layout_width="189dp"
-        android:layout_height="42dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:gravity="left|center"
         android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/locationButton"
         app:layout_constraintTop_toBottomOf="@+id/descriptionEditText" />
 </android.support.constraint.ConstraintLayout>

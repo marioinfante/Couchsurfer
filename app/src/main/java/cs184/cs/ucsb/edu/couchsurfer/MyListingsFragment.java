@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
 
-public class ListViewFragment extends Fragment {
+public class MyListingsFragment extends Fragment {
     MainActivity main;
     FloatingActionButton newPostButton;
     DatabaseReference db;
@@ -258,35 +258,14 @@ public class ListViewFragment extends Fragment {
         });
     }
 
+    // Filterlist here is meant for just author and this user
     public void filterList(){
         filtered_couches = new ArrayList<>();
 
         for(int i = 0; i < couches.size(); ++i){
-            // Filter Distance, find distance between the couch location and UCSB latlng
-            // TODO change to phone location
-            float[] distance = new float[1];
-            Location.distanceBetween(couches.get(i).getLatitude(), couches.get(i).getLongitude(), 34.412936, -119.847863, distance);
-            double metersToMiles = 1609.34;
-            // If distance is farther than distance from UCSB, go to next item in couches
-            if( distance[0]/metersToMiles > main.fDistance)
-            {
-                Log.d("tag", "Distance Filtered, " + distance[0]/metersToMiles + ": " + couches.get(i).getDescription());
-                continue;
+            if(couches.get(i).getAuthor().equals(main.currentUser.getDisplayName())){
+                filtered_couches.add(couches.get(i));
             }
-            // Filter Price
-            if(couches.get(i).getPrice() > main.fPriceMax || couches.get(i).getPrice() < main.fPriceMin)
-            {
-                Log.d("tag", "Price Filtered, " + couches.get(i).getPrice() + ": " + couches.get(i).getDescription());
-                continue;
-            }
-            // Filter Date
-            if(main.fDate != null && !main.fDate.equals(couches.get(i).getStart_date()))
-            {
-                Log.d("tag", "Date Filtered " + main.fDate + " and " + couches.get(i).getStart_date() + ": " + couches.get(i).getDescription());
-                continue;
-            }
-
-            filtered_couches.add(couches.get(i));
         }
         adapter.changeDataset(filtered_couches);
     }

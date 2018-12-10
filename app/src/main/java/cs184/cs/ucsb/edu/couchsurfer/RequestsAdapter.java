@@ -90,7 +90,7 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
         viewHolder.priceTV.setText( ((Double)couch.getPrice()).toString());
         viewHolder.pictureIV.setTag(position);
         Picasso.with(mContext)
-                .load(couch.getPictures()).resize(500, 500)
+                .load(couch.getPicture()).resize(500, 500)
                 .into(viewHolder.pictureIV);
 
 
