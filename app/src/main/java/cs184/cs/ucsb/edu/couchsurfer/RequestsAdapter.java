@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnClickListener {
 
@@ -73,13 +75,6 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
             viewHolder.statusTV = (TextView) convertView.findViewById(R.id.statusTV);
             viewHolder.cancelBtn = (Button) convertView.findViewById(R.id.cancelBtn);
 
-            viewHolder.cancelBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
             result=convertView;
             convertView.setTag(viewHolder);
         } else {
@@ -98,7 +93,26 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
                 .load(couch.getPicture()).resize(500, 500)
                 .into(viewHolder.pictureIV);
 
+
+        if (couch.getAccepted()) {
+            viewHolder.statusTV.setText("Accepted");
+        }
+        else {
+            viewHolder.statusTV.setText("Rejected");
+        }
+        viewHolder.cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    public void clearDataSet(){
+        dataSet.clear();
+        //this.notifyDataSetChanged();
     }
 }

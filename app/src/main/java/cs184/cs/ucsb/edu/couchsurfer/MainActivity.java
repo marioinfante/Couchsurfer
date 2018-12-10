@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ft.addToBackStack(null);
                 ft.commit();
         }
-      
+
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
         // Set action bar title
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void defaultFragment(){
+    public void defaultFragment() {
         ft = fm.beginTransaction();
         ft.replace(R.id.flContent, listViewFragment);
         ft.addToBackStack(null);
@@ -240,6 +240,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setHeaderInfo() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference().child("users");
         if (currentUser != null) {
             Query query =  dbRef.child(currentUser.getUid());
             query.addValueEventListener(new ValueEventListener() {
@@ -265,10 +267,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setRequestedPostIds() {
+        requestedCouches.clear();
         reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
                     postRef.child(child.getValue().toString()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -284,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             final String booker = dataSnapshot.child("booker").getValue().toString();
                             final boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
 
+
                             StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(picture);
                             httpsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
@@ -293,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             });
                         }
+
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
                             System.out.println("The read failed: " + databaseError.getCode());
@@ -301,6 +306,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
