@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -95,10 +96,9 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
                 // Filter Date
                 if(day != 0 && month != 0 && year != 0){
                     Log.d("tag","change date, " + month + "/" + day + "/" + year);
-                    main.fDate = new Date();
-                    main.fDate.setMonth(month);
-                    main.fDate.setYear(year);
-                    main.fDate.setDate(day);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(month + "/" + day + "/" + year);
+                    main.fDate = sb.toString();
                 }
                 else{
                     // set date to null for easy error checking
@@ -116,8 +116,9 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         @Override
         public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
             FilterFragment.this.setYear(year);
-            FilterFragment.this.setMonth(monthOfYear);
+            FilterFragment.this.setMonth(monthOfYear + 1);
             FilterFragment.this.setDay(dayOfMonth);
+            Log.d("tag", "Month of year = " + monthOfYear + " and month = " + month);
             fDate.setText((monthOfYear + 1) + "/" + dayOfMonth + "/" + (year));
         }
     }

@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public ArrayList<CouchPost> couches;
     public static ArrayList<CouchPost> requestedCouches;
 
     public ListView listview;
@@ -49,10 +48,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public FilterFragment filterFragment;
     public ProfileFragment profileFragment;
     public RequestsFragment requestsFragment;
+    public MyListingsFragment myListingsFragment;
     public static CustomAdapter adapter;
 
     // Filter Variables, default values (cuz i dont want to error check)
-    public Date fDate;
+    public String fDate;
     public double fPriceMin = 0;
     public double fPriceMax = 999999;
     public double fDistance = 999999;
@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         filterFragment = new FilterFragment();
         profileFragment = new ProfileFragment();
         requestsFragment = new RequestsFragment();
+        myListingsFragment = new MyListingsFragment();
 
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_myListings_fragment:
                 ft = fm.beginTransaction();
-                ft.replace(R.id.flContent, listViewFragment);
+                ft.replace(R.id.flContent, myListingsFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
@@ -266,21 +267,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             double longitude = Double.valueOf(dataSnapshot.child("longitude").getValue().toString());
                             double latitude = Double.valueOf(dataSnapshot.child("latitude").getValue().toString());
                             double price = Double.parseDouble(dataSnapshot.child("price").getValue().toString());
-                            Date start_date;
-                            Date end_date;
                             String pictures = dataSnapshot.child("pictures").getValue().toString();
+                            Uri uri = Uri.parse(pictures);
                             String booker = dataSnapshot.child("booker").getValue().toString();
                             boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
-
-                            try {
-                                DateFormat format = new SimpleDateFormat("EEE MMM dd", Locale.ENGLISH);
-                                start_date = format.parse(dataSnapshot.child("start_date").getValue().toString());
-                                end_date = format.parse(dataSnapshot.child("end_date").getValue().toString());
-                                CouchPost post = new CouchPost(author, authoruid, description, longitude, latitude, price, start_date, end_date, pictures, booker, accepted);
-                                requestedCouches.add(post);
-                            } catch (ParseException e) {
-                                Log.wtf("EXCEPTION", e);
-                            }
+                            String start_date = dataSnapshot.child("start_date").getValue().toString();
+                            String end_date = dataSnapshot.child("end_date").getValue().toString();
+                            CouchPost post = new CouchPost(author, authoruid, description, longitude, latitude, price, start_date, end_date, uri, booker, accepted);
+                            requestedCouches.add(post);
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {

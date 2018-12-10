@@ -29,9 +29,7 @@ public class ViewPostDialogFragment extends DialogFragment {
         args.putDouble("price", couch.getPrice());
         args.putString("author", couch.getAuthor());
         args.putString("description", couch.getDescription());
-        // TODO confirm that getStart_date() returns a string
-        //args.putString("date", couch.getStart_date());
-        args.putString("date", "11/11/11");
+        args.putString("date", couch.getStart_date());
 
         frag.setArguments(args);
         return frag;
