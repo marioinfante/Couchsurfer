@@ -25,7 +25,7 @@ public class ViewPostDialogFragment extends DialogFragment {
     public static ViewPostDialogFragment newInstance(CouchPost couch) {
         ViewPostDialogFragment frag = new ViewPostDialogFragment();
         Bundle args = new Bundle();
-        args.putString("picture_url", couch.getPictures());
+        args.putString("picture_url", couch.getPicture().toString());
         args.putDouble("price", couch.getPrice());
         args.putString("author", couch.getAuthor());
         args.putString("description", couch.getDescription());
