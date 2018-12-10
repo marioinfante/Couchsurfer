@@ -263,7 +263,7 @@ public class MyListingsFragment extends Fragment {
         filtered_couches = new ArrayList<>();
 
         for(int i = 0; i < couches.size(); ++i){
-            if(couches.get(i).getAuthor().equals(main.currentUser.getDisplayName())){
+            if(couches.get(i).getAuthorUid().equals(main.currentUser.getUid())){
                 filtered_couches.add(couches.get(i));
             }
         }
