@@ -280,7 +280,7 @@ public class ListViewFragment extends Fragment {
                 continue;
             }
             // Filter Date
-            if(main.fDate != null && !main.fDate.equals(couches.get(i).getStart_date()))
+            if(main.fDate != null && !main.fDate.isEmpty() && !main.fDate.equals(couches.get(i).getStart_date()))
             {
                 Log.d("tag", "Date Filtered " + main.fDate + " and " + couches.get(i).getStart_date() + ": " + couches.get(i).getDescription());
                 continue;

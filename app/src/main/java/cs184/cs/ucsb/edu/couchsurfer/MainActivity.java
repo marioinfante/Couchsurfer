@@ -171,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mDrawer.openDrawer(GravityCompat.START);
                 return true;
             case R.id.filter_button:
+                // Clear calendar data
+                fDate = null;
+
                 ft = fm.beginTransaction();
                 ft.replace(R.id.flContent, filterFragment);
                 ft.addToBackStack(null);
