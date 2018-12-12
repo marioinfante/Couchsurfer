@@ -6,14 +6,6 @@
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/row_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/row_description"
-        android:layout_alignTop="@+id/row_image"
-        android:text="Price" />
-
-    <TextView
         android:id="@+id/row_description"
         android:layout_width="267dp"
         android:layout_height="72dp"
@@ -34,20 +26,19 @@
         android:src="@android:drawable/ic_dialog_info" />
 
     <TextView
-        android:id="@+id/statusTV"
+        android:id="@+id/row_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/row_description"
-        android:text="Status: Pending"
-        android:textSize="18dp"
-        android:padding="10dp"/>
+        android:layout_alignStart="@+id/row_description"
+        android:layout_alignTop="@+id/row_image"
+        android:text="Price" />
 
-    <Button
-        android:id="@+id/cancelBtn"
+    <TextView
+        android:id="@+id/requestsTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/row_description"
-        android:layout_toEndOf="@+id/statusTV"
-        android:text="Cancel" />
+        android:text="0 Requests"
+        android:textSize="20dp"/>
 
 </RelativeLayout>

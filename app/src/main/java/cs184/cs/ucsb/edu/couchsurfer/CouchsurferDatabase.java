@@ -78,13 +78,17 @@ public class CouchsurferDatabase {
     }
 
     public void bookPost(String postId, String booker){
-        postsRef.child(postId).child("booker").setValue(booker);
+        //postsRef.child(postId).child("booker").setValue(booker);
         postsRef.child(postId).child("accepted").setValue("true");
+    }
+
+    public void requestPost(String postId, String booker) {
+        postsRef.child(postId).child("booker").setValue(booker);
     }
 
     public void cancelPostBooking(String postId){
         postsRef.child(postId).child("booker").setValue("none");
-        postsRef.child(postId).child("accepted").setValue("false");
+        //postsRef.child(postId).child("accepted").setValue("false");
     }
 
     public void addPostRequest(String userId, final String postId) {
