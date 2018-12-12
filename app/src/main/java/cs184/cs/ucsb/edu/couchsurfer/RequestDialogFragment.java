@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -64,7 +66,7 @@ public class RequestDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         nameTV = (TextView) view.findViewById(R.id.nameTV);
@@ -73,9 +75,46 @@ public class RequestDialogFragment extends DialogFragment {
         acceptBtn = (Button) view.findViewById(R.id.acceptBtn);
         rejectBtn = (Button) view.findViewById(R.id.rejectBtn);
 
+        acceptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postRef.child(postId).child("accepted").setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(@NonNull Void T) {
+                        Log.e("TAG", "booked set to true");
+                        dismiss();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("TAG", "failed to set booked to true");
+                    }
+                });
+            }
+        });
+
+        rejectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postRef.child(postId).child("booker").setValue("none").addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(@NonNull Void T) {
+                        Log.e("TAG", "set booker to none");
+                        dismiss();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("TAG", "failed to set booker to none");
+                    }
+                });
+
+            }
+        });
+
+
         Bundle args = getArguments();
         description = args.getString("description");
-
 
         postRef.orderByChild("description").equalTo(description).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -91,13 +130,17 @@ public class RequestDialogFragment extends DialogFragment {
                             Log.e("TAG", "booker" + dataSnapshot.getValue(String.class));
                             bookerId = dataSnapshot.getValue(String.class);
                             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
-                            usersRef.child(bookerId).addValueEventListener(new ValueEventListener() {
+                            usersRef.child(bookerId).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()) {
-                                        Log.e("TAG", "booker info set");
-                                        nameTV.setText("Name: " + dataSnapshot.getValue(User.class).getFullName());
-                                        phoneTV.setText("Phone: " + dataSnapshot.getValue(User.class).getPhoneNo());
+                                        Log.e("TAG", "booker info " + dataSnapshot.getValue());
+                                        nameTV.setText("Name: " + dataSnapshot.child("fullName").getValue().toString());
+                                        phoneTV.setText("Phone: " + dataSnapshot.child("phoneNo").getValue().toString());
+                                        Glide.with(view)
+                                                .load(dataSnapshot.child("profilePicUrl").getValue().toString())
+                                                .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
+                                                .into(profileIV);
                                     }
                                     else {
                                         Log.wtf("mytag", "dataSnapshot does not exists");

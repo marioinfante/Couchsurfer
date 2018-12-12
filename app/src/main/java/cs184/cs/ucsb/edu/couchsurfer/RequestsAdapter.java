@@ -1,6 +1,7 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,14 +94,17 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
                 .load(couch.getPicture()).resize(500, 500)
                 .into(viewHolder.pictureIV);
 
-        /*
-        if (couch.getAccepted()) {
-            viewHolder.statusTV.setText("Accepted");
+
+        if (!couch.getBooker().equals("none")){
+            if (couch.getAccepted() == true) {
+                viewHolder.statusTV.setText("Accepted");
+                viewHolder.statusTV.setTextColor(Color.GREEN);
+            }
+            else {
+                viewHolder.statusTV.setText("Rejected");
+                viewHolder.statusTV.setTextColor(Color.RED);
+            }
         }
-        else {
-            viewHolder.statusTV.setText("Rejected");
-        }
-        */
 
         viewHolder.cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override

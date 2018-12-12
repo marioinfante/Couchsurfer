@@ -1,6 +1,7 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.hardware.camera2.TotalCaptureResult;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +31,7 @@ import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 
 public class ViewPostDialogFragment extends DialogFragment {
 
@@ -132,16 +136,34 @@ public class ViewPostDialogFragment extends DialogFragment {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot child : dataSnapshot.getChildren()) {
                                 postId = child.getKey().toString();
-                                Log.e("TAG", "key: " + postId);
+                                Log.e("TAG", "postId: " + postId);
                                 postRef.child(postId).child("booker").setValue(main.currentUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        System.out.println("updated booker");
+                                        Log.e("TAG", "updated booker");
+                                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                        DatabaseReference reqRef = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
+                                        HashMap<String, String> userData = new HashMap<String, String>();
+                                        DatabaseReference pushedPostRef = reqRef.child("requests").push();
+                                        userData.put(pushedPostRef.getKey(), postId);
+                                        reqRef.child("requests").setValue(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(@NonNull Void T) {
+                                                Log.e("TAG", "added request to user");
+                                                Toast.makeText(getContext(), "Request has been sent.", Toast.LENGTH_SHORT).show();
+                                                dismiss();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.e("TAG", "failed to add request to user");
+                                            }
+                                        });
                                     }
                                 });
+
                             }
                         }
-
                         @Override
                         public void onCancelled(DatabaseError e) {
 

@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -57,7 +58,7 @@ public class MyListingsAdapter extends ArrayAdapter<CouchPost> implements View.O
     private int lastPosition = -1;
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         // Get the data item for this position
         couch = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
@@ -96,15 +97,12 @@ public class MyListingsAdapter extends ArrayAdapter<CouchPost> implements View.O
 
         viewHolder.requestsTV.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
-                // pass in couch args in here
-                RequestDialogFragment requestDialogFragment = RequestDialogFragment.newInstance(couch);
-                requestDialogFragment.show(fm, "dialog_fragment");
+            public void onClick(View v) {
+                ((ListView) parent).performItemClick(v, position, 0); // Let the event be handled in onItemClick()
             }
         });
 
-        if (couch.getBooker().equals("none")) {
+        if (couch.getBooker().equals("none") || couch.getAccepted() == true) {
             viewHolder.requestsTV.setText("0 requests");
         }
         else {

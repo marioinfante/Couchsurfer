@@ -71,11 +71,21 @@ public class MyListingsFragment extends Fragment {
         main.listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                long viewId = view.getId();
                 CouchPost couch = couches.get(position);
-                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
-                // pass in couch args in here
-                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(couch);
-                viewPostDialogFragment.show(fm, "dialog_fragment");
+                Log.e("TAG", "position: " + position);
+                if (viewId == R.id.requestsTV) {
+                    FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                    // pass in couch args in here
+                    RequestDialogFragment requestDialogFragment = RequestDialogFragment.newInstance(couch);
+                    requestDialogFragment.show(fm, "dialog_fragment");
+                }
+                else {
+                    FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                    // pass in couch args in here
+                    ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(couch);
+                    viewPostDialogFragment.show(fm, "dialog_fragment");
+                }
             }
         });
 
