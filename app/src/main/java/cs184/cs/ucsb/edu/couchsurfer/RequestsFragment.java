@@ -65,5 +65,4 @@ public class RequestsFragment extends Fragment {
         main.setRequestedPostIds();
         requestsAdapter.notifyDataSetChanged();
     }
-
 }

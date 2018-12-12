@@ -3,6 +3,7 @@ package cs184.cs.ucsb.edu.couchsurfer;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         // Get the data item for this position
         CouchPost couch = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
@@ -119,6 +121,6 @@ public class RequestsAdapter extends ArrayAdapter<CouchPost> implements View.OnC
 
     public void clearDataSet(){
         dataSet.clear();
-        //this.notifyDataSetChanged();
+        this.notifyDataSetChanged();
     }
 }
