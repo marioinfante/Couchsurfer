@@ -77,8 +77,11 @@ public class CouchsurferDatabase {
         return user;
     }
 
-    public void bookPost(String postId, String booker){
-        //postsRef.child(postId).child("booker").setValue(booker);
+    public void attemptToBookPost(String postId, String booker){
+        postsRef.child(postId).child("booker").setValue(booker);
+    }
+
+    public void acceptPostBooking(String postId){
         postsRef.child(postId).child("accepted").setValue("true");
     }
 
