@@ -25,8 +25,6 @@ public class RequestsFragment extends Fragment {
     private DatabaseReference reqRef;
     private DatabaseReference postRef;
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -67,5 +65,4 @@ public class RequestsFragment extends Fragment {
         main.setRequestedPostIds();
         requestsAdapter.notifyDataSetChanged();
     }
-
 }

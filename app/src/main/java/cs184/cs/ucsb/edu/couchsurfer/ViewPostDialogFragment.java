@@ -1,9 +1,12 @@
 package cs184.cs.ucsb.edu.couchsurfer;
 
 import android.hardware.camera2.TotalCaptureResult;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +15,40 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 
 public class ViewPostDialogFragment extends DialogFragment {
 
     Button requestButton;
     MainActivity main;
+
+    static CouchPost post;
+
+    String picture_url;
+    double price;
+    String author;
+    String description;
+    String date;
+    String authorUid;
+    String postId;
+
+    private DatabaseReference postRef;
 
     public ViewPostDialogFragment() {
         // Empty constructor is required for DialogFragment
@@ -41,6 +67,9 @@ public class ViewPostDialogFragment extends DialogFragment {
         args.putString("authorUid", couch.getAuthorUid());
 
         frag.setArguments(args);
+
+        post = couch;
+
         return frag;
     }
 
@@ -54,12 +83,12 @@ public class ViewPostDialogFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle args = getArguments();
-        String picture_url = args.getString("picture_url");
-        double price = args.getDouble("price");
-        String author = args.getString("author");
-        String description = args.getString("description");
-        String date = args.getString("date");
-        final String authorUid = args.getString("authorUid");
+        picture_url = args.getString("picture_url");
+        price = args.getDouble("price");
+        author = args.getString("author");
+        description = args.getString("description");
+        date = args.getString("date");
+        authorUid = args.getString("authorUid");
 
         TextView date_tv = view.findViewById(R.id.dates_dialog);
         TextView price_tv = view.findViewById(R.id.price_dialog);
@@ -69,6 +98,8 @@ public class ViewPostDialogFragment extends DialogFragment {
         Button requestButton = view.findViewById(R.id.requestButton);
 
         main = (MainActivity) getActivity();
+
+        postRef = FirebaseDatabase.getInstance().getReference().child("posts");
 
         String formattedPrice = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).toString();
 
@@ -99,9 +130,48 @@ public class ViewPostDialogFragment extends DialogFragment {
                 if(authorUid.equals(main.currentUser.getUid())) {
                     Toast.makeText(getContext(), "Cannot edit right now. Try again later.", Toast.LENGTH_SHORT).show();
                 }
-                else
-                    Toast.makeText(getContext(), "The owner has been sent a request to book", Toast.LENGTH_LONG).show();
+                else {
+                    postRef.orderByChild("description").equalTo(description).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                postId = child.getKey().toString();
+                                Log.e("TAG", "postId: " + postId);
+                                postRef.child(postId).child("booker").setValue(main.currentUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Log.e("TAG", "updated booker");
+                                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                        DatabaseReference reqRef = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
+                                        HashMap<String, String> userData = new HashMap<String, String>();
+                                        DatabaseReference pushedPostRef = reqRef.child("requests").push();
+                                        userData.put(pushedPostRef.getKey(), postId);
+                                        reqRef.child("requests").setValue(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(@NonNull Void T) {
+                                                Log.e("TAG", "added request to user");
+                                                Toast.makeText(getContext(), "Request has been sent.", Toast.LENGTH_SHORT).show();
+                                                dismiss();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.e("TAG", "failed to add request to user");
+                                            }
+                                        });
+                                    }
+                                });
+
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError e) {
+
+                        }
+                    });
+                }
             }
         });
     }
+
 }

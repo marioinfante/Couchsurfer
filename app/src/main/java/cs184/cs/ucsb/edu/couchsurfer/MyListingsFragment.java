@@ -28,14 +28,14 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static cs184.cs.ucsb.edu.couchsurfer.MainActivity.adapter;
-
 public class MyListingsFragment extends Fragment {
     MainActivity main;
     FloatingActionButton newPostButton;
     DatabaseReference db;
     HashMap<String,User> users;
     public ArrayList<CouchPost> couches, filtered_couches;
+
+    MyListingsAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -58,7 +58,8 @@ public class MyListingsFragment extends Fragment {
 
         users = new HashMap<>();
         couches = new ArrayList<>();
-        adapter = new CustomAdapter(couches, getContext());
+
+        adapter = new MyListingsAdapter(couches, getContext());
 
         // populates couches and filtered couches
         populateData();
@@ -70,11 +71,21 @@ public class MyListingsFragment extends Fragment {
         main.listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                long viewId = view.getId();
                 CouchPost couch = couches.get(position);
-                FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
-                // pass in couch args in here
-                ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(couch);
-                viewPostDialogFragment.show(fm, "dialog_fragment");
+                Log.e("TAG", "position: " + position);
+                if (viewId == R.id.requestsTV) {
+                    FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                    // pass in couch args in here
+                    RequestDialogFragment requestDialogFragment = RequestDialogFragment.newInstance(couch);
+                    requestDialogFragment.show(fm, "dialog_fragment");
+                }
+                else {
+                    FragmentManager fm = ((MainActivity) getContext()).getSupportFragmentManager();
+                    // pass in couch args in here
+                    ViewPostDialogFragment viewPostDialogFragment = ViewPostDialogFragment.newInstance(couch);
+                    viewPostDialogFragment.show(fm, "dialog_fragment");
+                }
             }
         });
 
@@ -88,6 +99,7 @@ public class MyListingsFragment extends Fragment {
                 startActivity(newPostIntent);
             }
         });
+
     }
 
     // Firebase code and populating the arraylist
