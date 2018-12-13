@@ -248,10 +248,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         Glide.with(headerLayout)
-                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
+                                .load(dataSnapshot.child("profilePicUrl").getValue().toString())
                                 .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
                                 .into(headerProfilePic);
-                        headerName.setText(dataSnapshot.getValue(User.class).getFullName());
+                        headerName.setText(dataSnapshot.child("fullName").getValue().toString());
                     }
                     else {
                         Log.wtf("mytag", "dataSnapshot does not exists");
