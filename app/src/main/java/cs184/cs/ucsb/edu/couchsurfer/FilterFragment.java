@@ -43,6 +43,11 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         fDateButton = view.findViewById(R.id.filter_datebutton);
         fDate = view.findViewById(R.id.filter_datetv);
 
+        day = 0;
+        month = 0;
+        year = 0;
+        main.fDate = null;
+
         final Calendar c = Calendar.getInstance();
         today_year = c.get(Calendar.YEAR);
         today_month = c.get(Calendar.MONTH);
@@ -102,6 +107,9 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
                     StringBuilder sb = new StringBuilder();
                     sb.append(month + "/" + day + "/" + year);
                     main.fDate = sb.toString();
+                    day = 0;
+                    month = 0;
+                    year = 0;
                 }
                 else{
                     // set date to null for easy error checking
