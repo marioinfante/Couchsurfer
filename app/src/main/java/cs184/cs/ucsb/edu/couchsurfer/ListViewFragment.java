@@ -165,6 +165,10 @@ public class ListViewFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d("tag", "On Child Added, " + couches.size());
 
+                if (dataSnapshot.child("authorUid").getValue() == null) {
+                    Log.e("TAG", "null: " + dataSnapshot.getKey());
+                }
+
                 authorUid = dataSnapshot.child("authorUid").getValue().toString();
                 // TODO Problem: What if users isn't populated yet?
                 if(users.get(authorUid) != null) {
@@ -202,7 +206,7 @@ public class ListViewFragment extends Fragment {
                 Log.d("tag", "On Child Changed, " + couches.size());
 
                 authorUid = dataSnapshot.child("authorUid").getValue().toString();
-                author = users.get(authorUid).getFullName();
+                author = dataSnapshot.child("author").getValue().toString();
                 description = dataSnapshot.child("description").getValue().toString();
                 booker = dataSnapshot.child("booker").getValue().toString();
                 latitude = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());

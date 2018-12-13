@@ -119,16 +119,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         headerName = headerLayout.findViewById(R.id.nameTV);
         setHeaderInfo();
 
-        Intent intent = new Intent(this, LogInActivity.class);
-        startActivity(intent);
-
         mapViewFragment = new MapViewFragment();
         listViewFragment = new ListViewFragment();
         filterFragment = new FilterFragment();
         profileFragment = new ProfileFragment();
         requestsFragment = new RequestsFragment();
         myListingsFragment = new MyListingsFragment();
-
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference().child("users");
@@ -278,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     postRef.child(child.getValue().toString()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            final String author = currentUser.getDisplayName().toString();
+                            final String author = dataSnapshot.child("author").getValue().toString();
                             final String authoruid = dataSnapshot.child("authorUid").getValue().toString();
                             final String description = dataSnapshot.child("description").getValue().toString();
                             final double longitude = Double.valueOf(dataSnapshot.child("longitude").getValue().toString());
@@ -289,7 +285,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             final String picture = dataSnapshot.child("picture").getValue().toString();
                             final String booker = dataSnapshot.child("booker").getValue().toString();
                             final boolean accepted = Boolean.valueOf(dataSnapshot.child("accepted").getValue().toString());
-
 
                             StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(picture);
                             httpsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -309,11 +304,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+
+        //add listener for when booker changes
     }
 }
