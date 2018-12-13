@@ -104,14 +104,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        fullNameTV.setText(dataSnapshot.getValue(User.class).getFullName());
-                        stateTV.setText("State: " + dataSnapshot.getValue(User.class).getState());
-                        cityTV.setText("City: " + dataSnapshot.getValue(User.class).getCity());
-                        usernameTV.setText("@"+ dataSnapshot.getValue(User.class).getUsername());
-                        phoneNoTV.setText("Phone: " + dataSnapshot.getValue(User.class).getPhoneNo());
+                        Log.e("TAG", "datasnapshot: " + dataSnapshot.getValue());
+                        fullNameTV.setText(dataSnapshot.child("fullName").getValue().toString());
+                        stateTV.setText("State: " + dataSnapshot.child("state").getValue().toString());
+                        cityTV.setText("City: " + dataSnapshot.child("city").getValue().toString());
+                        usernameTV.setText("@"+ dataSnapshot.child("username").getValue().toString());
+                        phoneNoTV.setText("Phone: " + dataSnapshot.child("phoneNo").getValue().toString());
                         emailTV.setText("Email: " + currentUser.getEmail());
                         Glide.with(view)
-                                .load(dataSnapshot.getValue(User.class).getProfilePicUrl())
+                                .load(dataSnapshot.child("profilePicUrl").getValue().toString())
                                 .apply(new RequestOptions().placeholder(R.drawable.default_profile_pic))
                                 .into(profilePicIV);
 
